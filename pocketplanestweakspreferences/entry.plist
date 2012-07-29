@@ -1,0 +1,10 @@
+{
+    entry = {
+	bundle = PocketPlanesTweaksPreferences;
+	cell = PSLinkCell;
+	detail = PocketPlanesTweaksPreferencesListController;
+	icon = PocketPlanesTweaks.png;
+	isController = 1;
+	label = "Pocket Planes Tweaks";
+    };
+}
