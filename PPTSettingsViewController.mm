@@ -3,8 +3,8 @@
 
 @interface PPTSettingsViewController()
 @property (nonatomic, retain) NSDictionary* settings;
-@property (nonatomic, retain) NSDictionary* userSettings;
-@property (nonatomic, retain) NSDictionary* settingMap;
+@property (nonatomic, retain) NSMutableDictionary* userSettings;
+@property (nonatomic, retain) NSMutableDictionary* settingMap;
 @property (nonatomic, retain) UIView* contentView;
 @property (nonatomic, retain) UINavigationBar* navBar;
 @property (nonatomic, retain) UITableView* settingsTableView;
@@ -91,7 +91,8 @@
     debug(@"-[PPTSettingsViewController viewDidLoad]");
     
     self.settings = [PPTSettings parseSettingsFile];
-    self.userSettings = [NSDictionary dictionaryWithContentsOfFile:[PPTSettings pathOfUserSettingsFile]];
+    self.userSettings = [NSMutableDictionary dictionaryWithContentsOfFile:[PPTSettings pathOfUserSettingsFile]];
+    self.settingMap = [[NSMutableDictionary alloc] initWithCapacity:1];
 }
 -(void)viewDidUnload {
     [super viewDidUnload];
@@ -100,6 +101,7 @@
     
     self.settings = nil;
     self.userSettings = nil;
+    self.settingMap = nil;
 }
 -(void)viewWillAppear:(BOOL)animated {
     debug(@"-[PPTSettingsViewController viewWillAppear:%@]", boolToString(animated));
@@ -135,20 +137,35 @@
     return [[[[[self.settings objectForKey:@"sections"] allObjects] objectAtIndex:section] objectForKey:@"items"] count];
 }
 -(UITableViewCell*)tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath {
+#define theKey [[[[[[[self.settings objectForKey:@"sections"] allObjects] objectAtIndex:indexPath.section] objectForKey:@"items"] allObjects] objectAtIndex:indexPath.row] objectForKey:@"key"]
     UITableViewCell* cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil] autorelease];
     
     UISwitch* theSwitch = [[[UISwitch alloc] init] autorelease];
     [theSwitch setOn:[[self.userSettings objectForKey:[[[[[[[self.settings objectForKey:@"sections"] allObjects] objectAtIndex:indexPath.section] objectForKey:@"items"] allObjects] objectAtIndex:indexPath.row] objectForKey:@"key"]] boolValue] animated:NO];
     [theSwitch addTarget:self action:@selector(switchChanged:) forControlEvents:UIControlEventValueChanged];
     //TODO: use settingMap to set up tags and stuff
+    [self.settingMap setObject:theSwitch forKey:theKey];
     
     cell.textLabel.text = [[[[[[[self.settings objectForKey:@"sections"] allObjects] objectAtIndex:indexPath.section] objectForKey:@"items"] allObjects] objectAtIndex:indexPath.row] objectForKey:@"label"];
     cell.accessoryView = theSwitch;
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     return cell;
 }
--(void)switchChanged:(id)sender {
+-(void)switchChanged:(UISwitch*)sender {
     debug(@"-[PPTSettingsViewController switchChanged]");
-    // TODO: When a switch changes, figure out which one changed and update its value in the user's settings
+    
+    if([[self.settingMap allKeysForObject:sender] count] != 0) {
+        NSString* key = [[self.settingMap allKeysForObject:sender] objectAtIndex:0];
+        
+        debug(@"Setting %@ %@", key, sender.on ? @"ON" : @"OFF");
+        
+        [self.userSettings setValue:[NSNumber numberWithBool:sender.on] forKey:key];
+        
+        if([self.userSettings writeToFile:[PPTSettings pathOfUserSettingsFile] atomically:YES]) {
+            log(@"Successfully wrote user tweak settings to %@.", [PPTSettings pathOfUserSettingsFile]);
+        }
+    } else {
+        log(@"Error! Setting not found for some reason :C");
+    }
 }
 @end

@@ -19,32 +19,6 @@ static BOOL eventJobsOnTop;             // default: NO
 
 static BOOL isTweakButtonPressed = NO;
 
-/*
-@interface PPTSettingsController : UIViewController {
-}
-@end
-
-@implementation PPTSettingsController
--(BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    return YES;
-}
--(void)didReceiveMemoryWarning {
-    // Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
-
-    // Release any cached data, images, etc that aren't in use.
-}
--(void)viewDidUnload {
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
-}
--(void)dealloc {
-    [super dealloc];
-}
-@end
-*/
-
 @implementation PPTSettings
 +(void)reconfigure {
 #define getBoolValue(val) [[dict objectForKey:val] boolValue]
@@ -53,6 +27,7 @@ static BOOL isTweakButtonPressed = NO;
 
     enabled = getBoolValue(@"Enabled");
     if(enabled) {
+        log(@"Pocket Planes Tweaks is enabled!");
         twitterEnabled = getBoolValue(@"TwitterEnabled");
         soundOnNewJobs = getBoolValue(@"SoundOnNewJobs");
         planeLandingNotifications = getBoolValue(@"PlaneLandingNotifications");
@@ -63,6 +38,7 @@ static BOOL isTweakButtonPressed = NO;
         tripPickerPlanes = getBoolValue(@"TripPickerPlanes");
         eventJobsOnTop = getBoolValue(@"EventJobsOnTop");
     } else {
+        log(@"Pocket Planes Tweaks is disabled.");
         twitterEnabled = YES;
         soundOnNewJobs = NO;
         planeLandingNotifications = YES;
@@ -73,6 +49,7 @@ static BOOL isTweakButtonPressed = NO;
         tripPickerPlanes = YES;
         eventJobsOnTop = NO;
     }
+    log(@"enabled? %@", boolToString(enabled));
     log(@"twitterEnabled? %@", boolToString(twitterEnabled));
     log(@"soundOnNewJobs? %@", boolToString(soundOnNewJobs));
     log(@"planeLandingNotifications? %@", boolToString(planeLandingNotifications));
@@ -86,10 +63,6 @@ static BOOL isTweakButtonPressed = NO;
     [dict release];
 #undef getBoolValue(val)
 }
-+(void)setup {
-    debug(@"+[PPTSettings setup]");
-    [PPTSettings reconfigure];
-}
 +(NSString*)pathOfUserSettingsFile {
     return @"/var/mobile/Library/Preferences/com.jaysan1292.pptweaksprefs.plist";
 }
@@ -99,6 +72,7 @@ static BOOL isTweakButtonPressed = NO;
 /*
 cycript stuff
 var dict = [[NSDictionary alloc] initWithContentsOfFile:@"/Library/PreferenceBundles/PocketPlanesTweaksPreferences.bundle/PocketPlanesTweaksPreferences.plist"]
+var user = [[NSDictionary alloc] initWithContentsOfFile:@"/var/mobile/Library/Preferences/com.jaysan1292.pptweaksprefs.plist"]
 var items = [[dict objectForKey:@"items"] allObjects]
 */
 

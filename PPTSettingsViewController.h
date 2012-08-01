@@ -2,7 +2,7 @@
 
 @interface PPTSettingsViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>{
 NSDictionary* settings;
-NSDictionary* userSettings;
+NSMutableDictionary* userSettings;
 UIView* contentView;
 UINavigationBar* navBar;
 UITableView* settingsTableView;

@@ -36,14 +36,16 @@ Configuration:
 - Show/hide plane labels
 
 TODO NEXT:
-- Set up custom settings implementation using Cocos2D-Extensions
 - Use NSUserDefaults for default values
 - There is a pretty big memory leak in the tweak settings screen.
+- Tweak.xm is too large. Split it up into more files.
 
 KNOWN BUGS:
 - There is a rare crash that happens when sending out a plane.
 
 CHANGELOG:
+- 1.0.4-382
+    - Added the ability to change settings from within the app via the Settings screen
 - 1.0.4-162
     - Global event jobs are placed at the top of the jobs list
 - 1.0.4-156
@@ -85,25 +87,6 @@ NSComparisonResult comparePlaneSpeed(PPPlaneInfo* first, PPPlaneInfo* second, vo
 }
 %end //}
 
-%hook PPAirportLayer //{
-// BOOL soundPlayed = NO;
-
-// -(void)updateTitle {
-// #define _titleLbl ((CCLabelBMFont*)getIvar(self, "titleLbl")).string
-    // %orig;
-    // debug(@"%@", _titleLbl);
-    // if([_titleLbl rangeOfString:@"New jobs!"].location != NSNotFound){
-        // log(@"New jobs!!!");
-        // if(!soundPlayed) {
-            // playSound(@"dink.wav");
-            // soundPlayed = YES;
-        // }
-    // } else {
-        // soundPlayed = NO;
-    // }
-// }
-%end //}
-
 %hook PPArrivalsLayer //{
 -(void)loadUI {
     debug(@"-[PPArrivalsLayer loadUI]");
@@ -115,28 +98,34 @@ NSComparisonResult comparePlaneSpeed(PPPlaneInfo* first, PPPlaneInfo* second, vo
 %hook PPCraftingLayer //{
 -(void)loadUI {
 #define _partList getIvar(self, "items")
-    debug(@"-[PPCraftingLayer loadUI]");
-    startTimeLog(start);
-    %orig;
-    int filter;
-    
-    object_getInstanceVariable(self, "filter", (void**)&filter);
-    if(filter == 1) {
-        [_partList sortUsingFunction:comparePlane context:nil];
+    if([PPTSettings enabled]) {
+        debug(@"-[PPCraftingLayer loadUI]");
+        startTimeLog(start);
+        %orig;
+        int filter;
+        
+        object_getInstanceVariable(self, "filter", (void**)&filter);
+        if(filter == 1) {
+            [_partList sortUsingFunction:comparePlane context:nil];
+        }
+        
+        endTimeLog(start, @"-[PPCraftingLayer loadUI]: Loading %d %s", [_partList count], filter == 1 ? "planes" : "parts");
+        callMemoryCleanup();
+    } else {
+        %orig;
     }
-    
-    endTimeLog(start, @"-[PPCraftingLayer loadUI]: Loading %d %s", [_partList count], filter == 1 ? "planes" : "parts");
-    callMemoryCleanup();
 }
 %end //}
 
 %hook PPDropdown //{
 -(id)initWithMessage:(id)message callback:(SEL)callback target:(id)target data:(id)data sound:(id)sound buzz:(BOOL)buzz {
     id dd = %orig;
-    debug(@"-[PPDropdown initWithMessage:%@ data:%@ sound:%@ buzz:%@]", getIvar(dd, "msg"), [dd data], getIvar(dd, "snd"), boolToString(buzz));
-    if([message isEqualToString:@"NEW JOBS!!!"] && [PPTSettings soundOnNewJobs]) {
-        log(@"New jobs!!!");
-        playSound(@"dink.wav");
+    if([PPTSettings enabled]) {
+        debug(@"-[PPDropdown initWithMessage:%@ data:%@ sound:%@ buzz:%@]", getIvar(dd, "msg"), [dd data], getIvar(dd, "snd"), boolToString(buzz));
+        if([message isEqualToString:@"NEW JOBS!!!"] && [PPTSettings soundOnNewJobs]) {
+            log(@"New jobs!!!");
+            playSound(@"dink.wav");
+        }
     }
     return dd;
 }
@@ -152,7 +141,6 @@ NSComparisonResult comparePlaneSpeed(PPPlaneInfo* first, PPPlaneInfo* second, vo
 
 %hook PPDropdownQueue //{
 -(void)addDropdown:(id)dropdown {
-    // debug(@"-[PPDropdownQueue addDropdown:%@", getIvar(dropdown, "msg"));
     if([[dropdown data] isMemberOfClass:[%c(PPPlaneInfo) class]] && ![PPTSettings planeLandingNotifications]) {
         // debug(@"Dropdown is a plane landing notification, discarding.");
         log(@"%@ has landed!", [[dropdown data] name]);
@@ -183,31 +171,33 @@ NSComparisonResult compareEvent(id first, id second, void *context) {
 #define _eventList getIvar(self, "items")
 #define _playerEventCount [[[%c(PPScene) sharedScene] playerData] getMeta:@"eventCount"]
 #define _globalEventId [[[%c(PPScene) sharedScene] playerData] getMeta:@"globalEvent"]
-    debug(@"-[PPEventsLayer initWithFilter:%d]", filter);
-    if(filter == 1) {
-        id eventsLayer = %orig;
-        
-        return eventsLayer;
-    } else {
-        startTimeLog(start);
-        startTimeLog(sort);
-        id eventsLayer = %orig;
-        
-        if([PPTSettings sortEventProgress]) {
-            debug(@"Sorting events list.");
-            [_eventList sortUsingFunction:compareEvent context:nil];
+    if([PPTSettings enabled]) {
+        debug(@"-[PPEventsLayer initWithFilter:%d]", filter);
+        if(filter == 1) {
+            id eventsLayer = %orig;
             
-            endTimeLog(sort, @"Sorting %d events", [_eventList count]);
+            return eventsLayer;
+        } else {
+            startTimeLog(start);
+            startTimeLog(sort);
+            id eventsLayer = %orig;
             
-            // Add the global event information to the top of the list
-            // Create a string in the format XX:XX that has the eventID in before the colon, and the player's amount in the second
-            // ^ this doesn't actually work, since the global event could have an ID that conflicts with the built-in one
-            // only way to go here is to reimplement this function
-            // [_eventList insertObject:[NSString stringWithFormat:@"%@:%@", _globalEventId, _playerEventCount] atIndex:0];
-            
-            endTimeLog(start, @"-[PPEventsLayer initWithFilter]");
+            if([PPTSettings sortEventProgress]) {
+                debug(@"Sorting events list.");
+                [_eventList sortUsingFunction:compareEvent context:nil];
+                
+                endTimeLog(sort, @"Sorting %d events", [_eventList count]);
+                
+                // Add the global event information to the top of the list
+                // Create a string in the format XX:XX that has the eventID in before the colon, and the player's amount in the second
+                // ^ this doesn't actually work, since the global event could have an ID that conflicts with the built-in one
+                // only way to go here is to reimplement this function
+                // [_eventList insertObject:[NSString stringWithFormat:@"%@:%@", _globalEventId, _playerEventCount] atIndex:0];
+                
+                endTimeLog(start, @"-[PPEventsLayer initWithFilter]");
+            }
+            return eventsLayer;
         }
-        return eventsLayer;
     }
 #undef _eventList
 #undef _playerEventCount
@@ -231,10 +221,12 @@ NSComparisonResult compareEvent(id first, id second, void *context) {
     debug(@"-[PPFlightLayer loadUI]");
     %orig;
     // debug(@"Moving tweet button to (%.0f, %.0f)", X, Y);
-    if([PPTSettings twitterEnabled]) {
-        [getIvar(self, "shareBtn") setPositionInPixels:ccp(X, Y)];
-    } else {
-        disableTweetBtn();
+    if([PPTSettings enabled]) {
+        if([PPTSettings twitterEnabled]) {
+            [getIvar(self, "shareBtn") setPositionInPixels:ccp(X, Y)];
+        } else {
+            disableTweetBtn();
+        }
     }
 #undef X
 #undef Y
@@ -280,6 +272,8 @@ NSComparisonResult compareJobDist(id first, id second, void *context) {
     
     startTimeLog(start);
     id orig =  %orig;
+    
+    if(![PPTSettings enabled]) return orig;
     
     if([PPTSettings eventJobsOnTop] && city != nil) {
         int globalEvent = (int)[[[[%c(PPScene) sharedScene] playerData] globalEvent] city_id];
@@ -343,26 +337,31 @@ var dot = object_getIvar(la, class_getInstanceVariable([la class], "dot"))
 -(void)zoomMapOut {
     debug(@"-[PPMapLayer zoomMapOut]");
     %orig;
-    [self setVisibleCities];
-    [self scalePlanes];
+    if([PPTSettings enabled]) {
+        [self setVisibleCities];
+        [self scalePlanes];
+    }
 }
 -(void)zoomMapIn {
     debug(@"-[PPMapLayer zoomMapIn]");
     %orig;
-    [self setVisibleCities];
-    [self scalePlanes];
+    if([PPTSettings enabled]) {
+        [self setVisibleCities];
+        [self scalePlanes];
+    }
 }
 -(void)loadMapUI {
     debug(@"-[PPMapLayer loadMapUI]");
     %orig;
-    [self setVisibleCities];
-    if(self.tripPicker && ![PPTSettings tripPickerPlanes]) {
-        [self hidePlanes];
+    if([PPTSettings enabled]) {
+        [self setVisibleCities];
+        if(self.tripPicker && ![PPTSettings tripPickerPlanes]) {
+            [self hidePlanes];
+        }
+        [self scalePlanes];
+        
+        disableTweetBtn();
     }
-    [self scalePlanes];
-    
-    disableTweetBtn();
-    
     callMemoryCleanup();
 }
 -(void)addCityToTrip:(id)trip {
@@ -373,13 +372,12 @@ var dot = object_getIvar(la, class_getInstanceVariable([la class], "dot"))
     // if true, then allow plane to fly there, else disallow it
     %orig;
     
-    
-    [self setVisibleCities];
+    if([PPTSettings enabled]) [self setVisibleCities];
 }
 -(void)removeLastLegFromTrip {
     debug(@"-[PPMapLayer removeLastLegFromTrip]");
     %orig;
-    [self setVisibleCities];
+    if([PPTSettings enabled]) [self setVisibleCities];
 }
 void displayLabelForCity(id city, BOOL show) {
     // debug(@"displayLabelForCity(%@, %@)", [[city info] name], boolToString(show));
@@ -649,7 +647,12 @@ NSComparisonResult comparePlaneName(PPPlaneInfo* first, PPPlaneInfo* second, voi
 //}
 -(void)spendBux:(int)bux {
 #ifdef DBG
-    return;
+    if([PPTSettings enabled]) {
+        return;
+    } else {
+        log(@"Spent %d bux.", bux);
+        %orig;
+    }
 #else
     log(@"Spent %d bux.", bux);
     %orig;
@@ -669,9 +672,11 @@ NSComparisonResult comparePlaneName(PPPlaneInfo* first, PPPlaneInfo* second, voi
 }
 -(id)planes {
     id planes = %orig;
-    startTimeLog(start);
-    [planes sortUsingFunction:comparePlane context:nil];
-    endTimeLogD(start, @"Sorting planes");
+    if([PPTSettings enabled]) {
+        startTimeLog(start);
+        [planes sortUsingFunction:comparePlane context:nil];
+        endTimeLogD(start, @"Sorting planes");
+    }
     return planes;
 }
 %end //}
@@ -749,13 +754,6 @@ NSComparisonResult comparePlaneName(PPPlaneInfo* first, PPPlaneInfo* second, voi
 // }
 
 __attribute__((constructor)) static void init() {
-    NSDictionary* dict = [[NSDictionary alloc] initWithContentsOfFile:[PPTSettings pathOfUserSettingsFile]];
-    if([[dict objectForKey:@"Enabled"] boolValue]) {
-        log(@"Pocket Planes Tweaks is enabled!");
-        [PPTSettings setup];
-        %init;
-    } else {
-        log(@"Pocket Planes Tweaks is disabled.");
-    }
-    [dict release];
+    [PPTSettings reconfigure];
+    %init;
 }
