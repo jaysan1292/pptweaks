@@ -1,20 +1,5 @@
 #import "Tweak.h"
-
-#import "InAppSettingsKit/IASKAppSettingsViewController.h"
-#import "InAppSettingsKit/IASKAppSettingsWebViewController.h"
-#import "InAppSettingsKit/IASKSpecifierValuesViewController.h"
-#import "InAppSettingsKit/IASKViewController.h"
-#import "InAppSettingsKit/IASKSettingsReader.h"
-#import "InAppSettingsKit/IASKSettingsStore.h"
-#import "InAppSettingsKit/IASKSettingsStoreFile.h"
-#import "InAppSettingsKit/IASKSettingsStoreUserDefaults.h"
-#import "InAppSettingsKit/IASKSpecifier.h"
-#import "InAppSettingsKit/IASKPSSliderSpecifierViewCell.h"
-#import "InAppSettingsKit/IASKPSTextFieldSpecifierViewCell.h"
-#import "InAppSettingsKit/IASKPSTitleValueSpecifierViewCell.h"
-#import "InAppSettingsKit/IASKSlider.h"
-#import "InAppSettingsKit/IASKSwitch.h"
-#import "InAppSettingsKit/IASKTextField.h"
+#import "PPTSettingsViewController.h"
 
 #define tweakButtonImage @"/Library/PreferenceBundles/PocketPlanesTweaksPreferences.bundle/tweak_settings_button.png"
 #define tweakButtonImagePressed @"/Library/PreferenceBundles/PocketPlanesTweaksPreferences.bundle/tweak_settings_button_pressed.png"
@@ -64,19 +49,30 @@ static BOOL isTweakButtonPressed = NO;
 +(void)reconfigure {
 #define getBoolValue(val) [[dict objectForKey:val] boolValue]
     debug(@"+[PPTSettings reconfigure]");
-    NSDictionary* dict = [[NSDictionary alloc] initWithContentsOfFile:[PPTSettings pathOfSettingsFile]];
+    NSDictionary* dict = [[NSDictionary alloc] initWithContentsOfFile:[PPTSettings pathOfUserSettingsFile]];
 
     enabled = getBoolValue(@"Enabled");
-    twitterEnabled = getBoolValue(@"TwitterEnabled");
-    soundOnNewJobs = getBoolValue(@"SoundOnNewJobs");
-    planeLandingNotifications = getBoolValue(@"PlaneLandingNotifications");
-    sortEventProgress = getBoolValue(@"SortEventProgress");
-    mapOverviewEnabled = getBoolValue(@"MapOverviewEnabled");
-    hidePlaneLabels = getBoolValue(@"HidePlaneLabels");
-    moreDetailedTime = getBoolValue(@"MoreDetailedTime");
-    tripPickerPlanes = getBoolValue(@"TripPickerPlanes");
-    eventJobsOnTop = getBoolValue(@"EventJobsOnTop");
-
+    if(enabled) {
+        twitterEnabled = getBoolValue(@"TwitterEnabled");
+        soundOnNewJobs = getBoolValue(@"SoundOnNewJobs");
+        planeLandingNotifications = getBoolValue(@"PlaneLandingNotifications");
+        sortEventProgress = getBoolValue(@"SortEventProgress");
+        mapOverviewEnabled = getBoolValue(@"MapOverviewEnabled");
+        hidePlaneLabels = getBoolValue(@"HidePlaneLabels");
+        moreDetailedTime = getBoolValue(@"MoreDetailedTime");
+        tripPickerPlanes = getBoolValue(@"TripPickerPlanes");
+        eventJobsOnTop = getBoolValue(@"EventJobsOnTop");
+    } else {
+        twitterEnabled = YES;
+        soundOnNewJobs = NO;
+        planeLandingNotifications = YES;
+        sortEventProgress = NO;
+        mapOverviewEnabled = NO;
+        hidePlaneLabels = NO;
+        moreDetailedTime = NO;
+        tripPickerPlanes = YES;
+        eventJobsOnTop = NO;
+    }
     log(@"twitterEnabled? %@", boolToString(twitterEnabled));
     log(@"soundOnNewJobs? %@", boolToString(soundOnNewJobs));
     log(@"planeLandingNotifications? %@", boolToString(planeLandingNotifications));
@@ -94,10 +90,59 @@ static BOOL isTweakButtonPressed = NO;
     debug(@"+[PPTSettings setup]");
     [PPTSettings reconfigure];
 }
-+(NSString*)pathOfSettingsFile {
++(NSString*)pathOfUserSettingsFile {
     return @"/var/mobile/Library/Preferences/com.jaysan1292.pptweaksprefs.plist";
 }
++(NSString*)pathOfSettingsFile {
+    return @"/Library/PreferenceBundles/PocketPlanesTweaksPreferences.bundle/PocketPlanesTweaksPreferences.plist";
+}
+/*
+cycript stuff
+var dict = [[NSDictionary alloc] initWithContentsOfFile:@"/Library/PreferenceBundles/PocketPlanesTweaksPreferences.bundle/PocketPlanesTweaksPreferences.plist"]
+var items = [[dict objectForKey:@"items"] allObjects]
+*/
 
+// Starts at a PSGroupCell, then traverses the dictionary until it reaches another, then returns
+NSMutableDictionary* getSpecifiersForGroup(NSDictionary* input, NSInteger &index) {
+#define items [[input objectForKey:@"items"] allObjects]
+    debug(@"getSpecifiersForGroup(<NSDictionary>, %d)", index);
+    NSMutableDictionary* out = [[[NSMutableDictionary alloc] initWithCapacity:1] autorelease];
+    [out addEntriesFromDictionary:[items objectAtIndex:index]];
+    
+    if(index+1 >= [items count]) return out; //bail out early
+    
+    NSMutableArray* array = [[[NSMutableArray alloc] initWithCapacity:1] autorelease];
+    do {
+        if([[[items objectAtIndex:index+1] objectForKey:@"cell"] isEqualToString:@"PSGroupCell"]) break;
+        
+        index++;
+        [array addObject:[[items objectAtIndex:index] copy]];
+    } while (YES);
+    
+    [out setObject:array forKey:@"items"];
+    // debug(@"returning: %@", [out description]);
+    debug(@"index after: %d", index);
+    return out;
+#undef items
+}
++(NSMutableDictionary*)parseSettingsFile {
+    debug(@"+[PPTSettings parseSettingsFile]");
+    NSDictionary* input = [NSDictionary dictionaryWithContentsOfFile:[PPTSettings pathOfSettingsFile]];
+    NSMutableDictionary* output = [[[NSMutableDictionary alloc] initWithCapacity:1] autorelease];
+    NSMutableArray* array = [[[NSMutableArray alloc] initWithCapacity:1] autorelease];
+    
+    NSInteger i = 0;
+    do {
+        debug(@"index: %d", i);
+        [array addObject:getSpecifiersForGroup(input, i)];
+        i++;
+    } while (i < [[input objectForKey:@"items"] count]);
+    
+    [output setObject:array forKey:@"sections"];
+    
+    // debug(@"output: %@", [output description]);
+    return output;
+}
 +(BOOL)enabled { return enabled; }
 +(BOOL)twitterEnabled { return twitterEnabled; }
 +(BOOL)soundOnNewJobs { return soundOnNewJobs; }
@@ -122,6 +167,13 @@ static BOOL isTweakButtonPressed = NO;
 #endif
 @end
 
+%hook AppDelegate //{
+-(void)applicationDidFinishLaunching:(UIApplication*)application {
+    debug(@"App finished launching!");
+    %orig;
+}
+%end //}
+
 %hook PPSettingsLayer //{
 /* cycript stuff
 var settingslayer = [[PPScene sharedScene]menuLayer]
@@ -138,7 +190,7 @@ var tweakBtnShadow = [tweakBtn.children objectAtIndex:0]
     if(CGRectContainsPoint(tweakBtnRect, location)) {
         debug(@"Tweak settings button pressed!");
         isTweakButtonPressed = YES;
-        
+
         CCSprite* overlay = [%c(PPSpriteFactory) spriteWithFile:tweakButtonImage];
         [overlay setOpacity:128];
         [overlay setColor:ccBLACK];
@@ -146,7 +198,7 @@ var tweakBtnShadow = [tweakBtn.children objectAtIndex:0]
         [overlay setIsRelativeAnchorPoint:NO];
         [overlay setScale:1];
         [tweakSettingBtn addChild:overlay z:1];
-        
+
         return kEventHandled;
     } else {
         return %orig;
@@ -187,15 +239,18 @@ var tweakBtnShadow = [tweakBtn.children objectAtIndex:0]
 }
 %new -(void)showTweakSettings {
     debug(@"-[PPSettingsLayer showTweakSettings]");
+    #ifndef DBG
     UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Coming soon!" message:nil delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK", nil]; [alert show]; [alert release];
-    // IASKAppSettingsViewController* viewController = [[IASKAppSettingsViewController alloc] init];
-    // viewController.delegate = self;
-    
-    // [viewController setShowCreditsFooter:NO];
-    // [viewController release];
+    #else
+    #define rootViewController [[[[UIApplication sharedApplication]delegate]window]rootViewController]
+    PPTSettingsViewController* settings = [[PPTSettingsViewController alloc] init];
+    [[[%c(CCDirector) sharedDirector] openGLView] addSubview:[[settings retain] view]];
+    [settings release];
+    #endif
 }
 %new -(void)settingsViewControllerDidEnd:(id)sender {
-    [self dismissModalViewControllerAnimated:YES];
+    debug(@"-[PPSettingsLayer settingsViewControllerDidEnd]");
+    // [self dismissModalViewControllerAnimated:YES];
     [PPTSettings reconfigure];
 }
 %end //}

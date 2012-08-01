@@ -1,6 +1,10 @@
 {
     items = (
         {
+            cell = PSGroupCell;
+            label = "Enable Tweak";
+        },
+        {
             cell = PSSwitchCell;
             default = 0;
             defaults = "com.jaysan1292.pptweaksprefs";

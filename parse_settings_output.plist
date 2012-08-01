@@ -1,0 +1,118 @@
+{
+    {
+        cell = PSGroupCell;
+        label = "Enable Tweak";
+        items = (
+            {
+                cell = PSSwitchCell;
+                default = 0;
+                defaults = "com.jaysan1292.pptweaksprefs";
+                key = Enabled;
+                label = Enabled;
+            }
+        );
+    },
+    {
+        cell = PSGroupCell;
+        label = "Twitter Integration";
+        items = (
+            {
+                cell = PSSwitchCell;
+                default = 1;
+                defaults = "com.jaysan1292.pptweaksprefs";
+                key = TwitterEnabled;
+                label = "Enable Twitter";
+            }
+        );
+    },
+    {
+        cell = PSGroupCell;
+        footerText = "Map Far View: show your owned airports at any zoom level.\n\nPlanes in Trip Picker: Show your other planes when sending out a plane.";
+        label = "Map View Settings";
+        items = (
+            {
+                cell = PSSwitchCell;
+                default = 0;
+                defaults = "com.jaysan1292.pptweaksprefs";
+                key = MapOverviewEnabled;
+                label = "Map Far View";
+            },
+            {
+                cell = PSSwitchCell;
+                default = 0;
+                defaults = "com.jaysan1292.pptweaksprefs";
+                key = HidePlaneLabels;
+                label = "Hide Plane Labels";
+            },
+            {
+                cell = PSSwitchCell;
+                default = 1;
+                defaults = "com.jaysan1292.pptweaksprefs";
+                key = TripPickerPlanes;
+                label = "Planes in Trip Picker";
+            }
+        );
+    },
+    {
+        cell = PSGroupCell;
+        footerText = "Play Sound on New Jobs: Play a \"dink\" sound when new jobs come in.\n\nMore Detailed Time: Changes time display to show more detailed times.\nExample: Instead of \"<1M\", show \"40s\"\n\nSort Event Progress: Sort events in the Events screen by progress made.\n\nPlane Landing Notifications: If off, instead of showing a dropdown notification, play a sound.";
+        label = Miscellaneous;
+        items = (
+            {
+                cell = PSSwitchCell;
+                default = 0;
+                defaults = "com.jaysan1292.pptweaksprefs";
+                key = SoundOnNewJobs;
+                label = "Play Sound on New Jobs";
+            },
+            {
+                cell = PSSwitchCell;
+                default = 0;
+                defaults = "com.jaysan1292.pptweaksprefs";
+                key = MoreDetailedTime;
+                label = "More Detailed Time";
+            },
+            {
+                cell = PSSwitchCell;
+                default = 0;
+                defaults = "com.jaysan1292.pptweaksprefs";
+                key = SortEventProgress;
+                label = "Sort Event Progress";
+            },
+            {
+                cell = PSSwitchCell;
+                default = 1;
+                defaults = "com.jaysan1292.pptweaksprefs";
+                key = PlaneLandingNotifications;
+                label = "Plane Landing Notifications";
+            },
+            {
+                cell = PSSwitchCell;
+                default = 0;
+                defaults = "com.jaysan1292.pptweaksprefs";
+                key = EventJobsOnTop;
+                label = "Event Jobs on Top";
+            }
+        );
+    },
+    {
+        cell = PSGroupCell;
+        isStaticText = 1;
+        items = ();
+    },
+    {
+        cell = PSGroupCell;
+        footerText = "Pocket Planes Tweaks v1.0.4";
+        items = ();
+    },
+    {
+        cell = PSGroupCell;
+        footerText = "\U00a9 2012 Jason Recillo";
+        items = ();
+    },
+    {
+        cell = PSGroupCell;
+        footerText = "I'm on Twitter! http://twitter.com/jaysan1292";
+        items = ();
+    }
+}

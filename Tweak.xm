@@ -36,26 +36,23 @@ Configuration:
 - Show/hide plane labels
 
 TODO NEXT:
-- Set up InAppSettingsKit
+- Set up custom settings implementation using Cocos2D-Extensions
 - Use NSUserDefaults for default values
+- There is a pretty big memory leak in the tweak settings screen.
 
 KNOWN BUGS:
 - There is a rare crash that happens when sending out a plane.
 
 CHANGELOG:
-1.0.4-162
-    Global event jobs are placed at the top of the jobs list
-1.0.4-156
-    Added the ability to show or hide planes when planning a new trip
-1.0.4-145
-    Initial release
+- 1.0.4-162
+    - Global event jobs are placed at the top of the jobs list
+- 1.0.4-156
+    - Added the ability to show or hide planes when planning a new trip
+- 1.0.4-145
+    - Initial release
 */
 
 // Header stuff {
-#import <mach/mach.h>
-#import <typeinfo>
-#import <execinfo.h>
-
 #import "Tweak.h"
 
 #define showDropdown(str, args...) id dd = [[%c(PPDropdown) alloc] initWithMessage:[NSString stringWithFormat:str, ##args] callback:nil target:nil data:nil sound:nil buzz:NO]; [[%c(PPDropdownQueue) sharedQueue] addDropdown:dd]; [dd release]
@@ -76,49 +73,6 @@ NSComparisonResult comparePlaneName(PPPlaneInfo* first, PPPlaneInfo* second, voi
 NSComparisonResult comparePlaneSpeed(PPPlaneInfo* first, PPPlaneInfo* second, void* context);
 // }
 
-// Various reporting functions {
-float get_memory() {
-    struct task_basic_info info;
-    mach_msg_type_number_t size = sizeof(info);
-    kern_return_t kerr = task_info(mach_task_self(), TASK_BASIC_INFO, (task_info_t)&info, &size);
-    
-    if(kerr == KERN_SUCCESS) {
-        return ((float)info.resident_size / 1024.0f / 1024.0f);
-    } else {
-        return -1.0f;
-    }
-}
-NSString* return_memory() {
-    float memory = get_memory();
-
-    if (memory != -1) {
-        return [NSString stringWithFormat:@"Memory usage (in megabytes): %.4f", memory];
-    } else {
-        return @"Error retrieving memory usage.";
-    }
-}
-void report_memory() {
-    log(@"%@", return_memory());
-}
-void print_backtrace() {
-    void* array[24];
-    size_t size;
-    char **strings;
-    size_t i;
-    
-    size = backtrace(array, 24);
-    strings = backtrace_symbols(array, size);
-    
-    debug(@"Begin stack trace:");
-    for(int i = 0; i < size; i++) {
-        debug(@"%s",strings[i]);
-    }
-    debug(@"End stack trace.");
-    
-    free(strings);
-}
-// }
-
 // }
 
 // Hooking! {
@@ -135,7 +89,7 @@ void print_backtrace() {
 // BOOL soundPlayed = NO;
 
 // -(void)updateTitle {
-// #define _titleLbl ((CCLabelBMFont*)object_getIvar(self, class_getInstanceVariable([self class], "titleLbl"))).string
+// #define _titleLbl ((CCLabelBMFont*)getIvar(self, "titleLbl")).string
     // %orig;
     // debug(@"%@", _titleLbl);
     // if([_titleLbl rangeOfString:@"New jobs!"].location != NSNotFound){
@@ -160,8 +114,7 @@ void print_backtrace() {
 
 %hook PPCraftingLayer //{
 -(void)loadUI {
-#define _partList object_getIvar(self, class_getInstanceVariable([self class], "items"))
-#define _filter object_getIvar
+#define _partList getIvar(self, "items")
     debug(@"-[PPCraftingLayer loadUI]");
     startTimeLog(start);
     %orig;
@@ -180,7 +133,7 @@ void print_backtrace() {
 %hook PPDropdown //{
 -(id)initWithMessage:(id)message callback:(SEL)callback target:(id)target data:(id)data sound:(id)sound buzz:(BOOL)buzz {
     id dd = %orig;
-    debug(@"-[PPDropdown initWithMessage:%@ data:%@ sound:%@ buzz:%@]", object_getIvar(dd, class_getInstanceVariable([dd class], "msg")), [dd data], object_getIvar(dd, class_getInstanceVariable([dd class], "snd")), boolToString(buzz));
+    debug(@"-[PPDropdown initWithMessage:%@ data:%@ sound:%@ buzz:%@]", getIvar(dd, "msg"), [dd data], getIvar(dd, "snd"), boolToString(buzz));
     if([message isEqualToString:@"NEW JOBS!!!"] && [PPTSettings soundOnNewJobs]) {
         log(@"New jobs!!!");
         playSound(@"dink.wav");
@@ -188,18 +141,18 @@ void print_backtrace() {
     return dd;
 }
 -(void)closeDropDown {
-    debug(@"-[PPDropdown closeDropDown]: %@", object_getIvar(self, class_getInstanceVariable([self class], "msg")));
+    debug(@"-[PPDropdown closeDropDown]: %@", getIvar(self, "msg"));
     %orig;
 }
 -(void)dealloc {
-    debug(@"-[PPDropdown dealloc]: %@", object_getIvar(self, class_getInstanceVariable([self class], "msg")));
+    debug(@"-[PPDropdown dealloc]: %@", getIvar(self, "msg"));
     %orig;
 }
 %end //}
 
 %hook PPDropdownQueue //{
 -(void)addDropdown:(id)dropdown {
-    // debug(@"-[PPDropdownQueue addDropdown:%@", object_getIvar(dropdown, class_getInstanceVariable([dropdown class], "msg")));
+    // debug(@"-[PPDropdownQueue addDropdown:%@", getIvar(dropdown, "msg"));
     if([[dropdown data] isMemberOfClass:[%c(PPPlaneInfo) class]] && ![PPTSettings planeLandingNotifications]) {
         // debug(@"Dropdown is a plane landing notification, discarding.");
         log(@"%@ has landed!", [[dropdown data] name]);
@@ -227,7 +180,7 @@ NSComparisonResult compareEvent(id first, id second, void *context) {
 }
 // }
 -(id)initWithFilter:(int)filter {
-#define _eventList object_getIvar(self, class_getInstanceVariable([self class], "items"))
+#define _eventList getIvar(self, "items")
 #define _playerEventCount [[[%c(PPScene) sharedScene] playerData] getMeta:@"eventCount"]
 #define _globalEventId [[[%c(PPScene) sharedScene] playerData] getMeta:@"globalEvent"]
     debug(@"-[PPEventsLayer initWithFilter:%d]", filter);
@@ -279,7 +232,7 @@ NSComparisonResult compareEvent(id first, id second, void *context) {
     %orig;
     // debug(@"Moving tweet button to (%.0f, %.0f)", X, Y);
     if([PPTSettings twitterEnabled]) {
-        [object_getIvar(self, class_getInstanceVariable([self class], "shareBtn")) setPositionInPixels:ccp(X, Y)];
+        [getIvar(self, "shareBtn") setPositionInPixels:ccp(X, Y)];
     } else {
         disableTweetBtn();
     }
@@ -322,7 +275,7 @@ NSComparisonResult compareJobDist(id first, id second, void *context) {
 }
 // }
 -(id)initWithCity:(id)city plane:(id)plane fiter:(int)fiter {
-#define _jobList object_getIvar(orig, class_getInstanceVariable([orig class], "jobs"))
+#define _jobList getIvar(orig, "jobs")
     debug(@"-[PPJobsLayer initWithCity:%@ plane:%@ fiter:%d]", [city name], [[plane info] name], fiter);
     
     startTimeLog(start);
@@ -366,7 +319,7 @@ NSComparisonResult compareJobDist(id first, id second, void *context) {
 }
 -(void)refreshCityJobs:(id)jobs {
     // id jobs = PPDialog
-    debug(@"-[PPJobsLayer refreshCityJobs:%@]", object_getIvar(jobs, class_getInstanceVariable([jobs class], "_target")));
+    debug(@"-[PPJobsLayer refreshCityJobs:%@]", getIvar(jobs, "_target"));
     %orig;
 }
 %end //}
@@ -377,13 +330,6 @@ NSComparisonResult compareJobDist(id first, id second, void *context) {
     %orig;
 }
 %end //}
-
-// %hook PPList //{
-// +(id)alloc {
-    // debug(@"+[PPList alloc]");
-    // %orig;
-// }
-// %end //}
 
 %hook PPMapLayer //{
 /*
@@ -435,32 +381,24 @@ var dot = object_getIvar(la, class_getInstanceVariable([la class], "dot"))
     %orig;
     [self setVisibleCities];
 }
--(id)init {
-    debug(@"-[PPMapLayer init]");
-    return %orig;
-}
-+(id)scene {
-    debug(@"+[PPMapLayer scene]");
-    return %orig;
-}
 void displayLabelForCity(id city, BOOL show) {
     // debug(@"displayLabelForCity(%@, %@)", [[city info] name], boolToString(show));
-    ((CCNode*)object_getIvar(city, class_getInstanceVariable([city class], "nameLbl"))).visible = show;
-    ((CCNode*)object_getIvar(city, class_getInstanceVariable([city class], "shadowLbl"))).visible = show;
-    ((CCNode*)object_getIvar(city, class_getInstanceVariable([city class], "detailLbl"))).visible = show;
-    ((CCNode*)object_getIvar(city, class_getInstanceVariable([city class], "detailShadowLbl"))).visible = show;   
+    ((CCNode*)getIvar(city, "nameLbl")).visible = show;
+    ((CCNode*)getIvar(city, "shadowLbl")).visible = show;
+    ((CCNode*)getIvar(city, "detailLbl")).visible = show;
+    ((CCNode*)getIvar(city, "detailShadowLbl")).visible = show;
 }
 %new -(void)setVisibleCities {
 //define local "constants" to save on memory usage
 #define _mapScale [[[[%c(PPScene) sharedScene] playerData] getMeta:@"mapZ"] floatValue]
-#define _mapCities object_getIvar(self, class_getInstanceVariable([self class], "mapCities"))
+#define _mapCities getIvar(self, "mapCities")
 #define _city [city info]
-#define _nameLbl object_getIvar(city, class_getInstanceVariable([city class], "nameLbl"))
-#define _shadowLbl object_getIvar(city, class_getInstanceVariable([city class], "shadowLbl"))
-#define _detailLbl object_getIvar(city, class_getInstanceVariable([city class], "detailLbl"))
-#define _countLbl object_getIvar(city, class_getInstanceVariable([city class], "countLbl"))
-#define _detailShadowLbl object_getIvar(city, class_getInstanceVariable([city class], "detailShadowLbl"))
-#define _dot object_getIvar(city, class_getInstanceVariable([city class], "dot"))
+#define _nameLbl getIvar(city, "nameLbl")
+#define _shadowLbl getIvar(city, "shadowLbl")
+#define _detailLbl getIvar(city, "detailLbl")
+#define _countLbl getIvar(city, "countLbl")
+#define _detailShadowLbl getIvar(city, "detailShadowLbl")
+#define _dot getIvar(city, "dot")
 #define setDotOpacity(x) [_dot setOpacity:x]; [_countLbl setOpacity:x]
 
     startTimeLog(start);
@@ -558,7 +496,7 @@ void displayLabelForCity(id city, BOOL show) {
 #undef setDotOpacity(x)
 }
 %new -(void)hidePlanes {
-#define _mapPlanes object_getIvar(self, class_getInstanceVariable([self class], "mapPlanes"))
+#define _mapPlanes getIvar(self, "mapPlanes")
     debug(@"-[PPMapLayer hidePlanes]");
     startTimeLog(start);
     
@@ -573,7 +511,7 @@ void displayLabelForCity(id city, BOOL show) {
 }
 %new -(void)scalePlanes {
 #define _mapScale [[[[%c(PPScene) sharedScene] playerData] getMeta:@"mapZ"] floatValue]
-#define _mapPlanes object_getIvar(self, class_getInstanceVariable([self class], "mapPlanes"))
+#define _mapPlanes getIvar(self, "mapPlanes")
     debug(@"-[PPMapLayer scalePlanes]");
     if([PPTSettings mapOverviewEnabled]) {
         startTimeLog(start);
@@ -611,14 +549,14 @@ var ppMapLayer = [[mapLayer children] objectAtIndex:0]
 var mapPlanes = object_getIvar(ppMapLayer, class_getInstanceVariable([ppMapLayer class], "mapPlanes"))
 */
 -(id)initWithInfo:(id)info trip:(id)trip {
-    debug(@"-[PPMapPlane initWithInfo:%@ trip:%@]", [info name], [trip description]);
+    // debug(@"-[PPMapPlane initWithInfo:%@ trip:%@]", [info name], [trip description]);
     CCNode* mapplane = %orig;
 
     if([PPTSettings hidePlaneLabels]) {
-        [object_getIvar(mapplane, class_getInstanceVariable([mapplane class], "planeLbl")) setVisible:NO];
-        [object_getIvar(mapplane, class_getInstanceVariable([mapplane class], "nameLbl")) setVisible:NO];
+        [getIvar(mapplane, "planeLbl") setVisible:NO];
+        [getIvar(mapplane, "nameLbl") setVisible:NO];
         if(((PPMapLayer*)mapplane.parent.parent).tripPicker) {
-            [object_getIvar(mapplane, class_getInstanceVariable([mapplane class], "pMarker")) setVisible:NO];
+            [getIvar(mapplane, "pMarker") setVisible:NO];
         }
     }
     
@@ -811,7 +749,7 @@ NSComparisonResult comparePlaneName(PPPlaneInfo* first, PPPlaneInfo* second, voi
 // }
 
 __attribute__((constructor)) static void init() {
-    NSDictionary* dict = [[NSDictionary alloc] initWithContentsOfFile:[PPTSettings pathOfSettingsFile]];
+    NSDictionary* dict = [[NSDictionary alloc] initWithContentsOfFile:[PPTSettings pathOfUserSettingsFile]];
     if([[dict objectForKey:@"Enabled"] boolValue]) {
         log(@"Pocket Planes Tweaks is enabled!");
         [PPTSettings setup];

@@ -1,10 +1,14 @@
 #ifndef TWEAK_H_GUARD
 #define TWEAK_H_GUARD
 
+#import <mach/mach.h>
+#import <typeinfo>
+#import <execinfo.h>
 #import "hookclasses.h"
 
-// #define DBG
+#define DBG
 
+#define getIvar(var, name) object_getIvar(var, class_getInstanceVariable([var class], name))
 #define formatString(str, args...) [NSString stringWithFormat:str, ##args]
 #define boolToString(x) (x ? @"YES" : @"NO")
 #define log(str, args...) NSLog(@"[PPTweaks-%.1s:%-3d]: %@", __FILE__, __LINE__, [NSString stringWithFormat:str, ##args])
@@ -13,7 +17,7 @@
 #define endTimeLogD(var, str, args...) debug(@"%@ took %.6fs.", [NSString stringWithFormat:str, ##args], fabs([var timeIntervalSinceNow]))
 #define ccp(_X_,_Y_) CGPointMake(_X_,_Y_)
 #define isObject(obj) ([[NSString stringWithFormat:@"%s", typeid(obj).name()] rangeOfString:@"objc_object"].location != NSNotFound)
-#define disableTweetBtn() ((CCNode*)object_getIvar(self, class_getInstanceVariable([self class], "shareBtn"))).positionInPixels = ccp(-9999.0, -9999.0)
+#define disableTweetBtn() ((CCNode*)getIvar(self, "shareBtn")).positionInPixels = ccp(-9999.0, -9999.0)
 
 #ifdef DBG
 #define debug(str, args...) NSLog(@"[PPTweaks-%.1s:%-3d]: %@", __FILE__, __LINE__, [NSString stringWithFormat:str, ##args])
@@ -22,7 +26,11 @@
 #define logMemoryUsage()
 #endif
 
-__attribute__((visibility("hidden")))
+float get_memory();
+NSString* return_memory();
+void report_memory();
+void print_backtrace();
+
 @interface PPTSettings {
 }
 +(BOOL)enabled;
@@ -51,6 +59,8 @@ __attribute__((visibility("hidden")))
 +(void)reconfigure;
 +(void)setup;
 +(NSString*)pathOfSettingsFile;
++(NSString*)pathOfUserSettingsFile;
++(NSDictionary*)parseSettingsFile;
 @end
 
 #endif

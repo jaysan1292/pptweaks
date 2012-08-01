@@ -4,7 +4,7 @@ Depends: mobilesubstrate, preferenceloader
 Version: 1.0.4
 Architecture: iphoneos-arm
 Description: Tweaks a number of things in NimbleBit's Pocket Planes. Make sure to check Settings to configure!
-Depiction: http://jaysan1292.com/repo/depictions/pocketplanestweaks.php
+Depiction: http://jaysan1292.com/repo/depictions/app.php?n=pocketplanestweaks
 Maintainer: Jason Recillo
 Author: Jason Recillo
 Section: Tweaks

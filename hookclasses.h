@@ -2,7 +2,6 @@
 #define HOOKCLASSES_H
 
 #import <OpenGLES/ES1/gl.h>
-
 // Cocos2D Classes and Structs {
 typedef struct _ccColor3B {
     GLubyte r;
