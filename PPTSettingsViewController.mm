@@ -1,15 +1,6 @@
 #import "Tweak.h"
 #import "PPTSettingsViewController.h"
 
-@interface PPTSettingsViewController()
-@property (nonatomic, retain) NSDictionary* settings;
-@property (nonatomic, retain) NSMutableDictionary* userSettings;
-@property (nonatomic, retain) NSMutableDictionary* settingMap;
-@property (nonatomic, retain) UIView* contentView;
-@property (nonatomic, retain) UINavigationBar* navBar;
-@property (nonatomic, retain) UITableView* settingsTableView;
-@end
-
 @implementation PPTSettingsViewController
 @synthesize settings, userSettings, settingMap;
 @synthesize contentView, navBar, settingsTableView;
@@ -143,13 +134,14 @@
     UISwitch* theSwitch = [[[UISwitch alloc] init] autorelease];
     [theSwitch setOn:[[self.userSettings objectForKey:[[[[[[[self.settings objectForKey:@"sections"] allObjects] objectAtIndex:indexPath.section] objectForKey:@"items"] allObjects] objectAtIndex:indexPath.row] objectForKey:@"key"]] boolValue] animated:NO];
     [theSwitch addTarget:self action:@selector(switchChanged:) forControlEvents:UIControlEventValueChanged];
-    //TODO: use settingMap to set up tags and stuff
+    
     [self.settingMap setObject:theSwitch forKey:theKey];
     
     cell.textLabel.text = [[[[[[[self.settings objectForKey:@"sections"] allObjects] objectAtIndex:indexPath.section] objectForKey:@"items"] allObjects] objectAtIndex:indexPath.row] objectForKey:@"label"];
     cell.accessoryView = theSwitch;
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     return cell;
+#undef theKey
 }
 -(void)switchChanged:(UISwitch*)sender {
     debug(@"-[PPTSettingsViewController switchChanged]");

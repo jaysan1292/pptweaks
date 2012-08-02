@@ -1,5 +1,5 @@
-#ifndef TWEAK_H_GUARD
-#define TWEAK_H_GUARD
+#ifndef __TWEAK_H
+#define __TWEAK_H
 
 #import <mach/mach.h>
 #import <typeinfo>
@@ -31,8 +31,7 @@ NSString* return_memory();
 void report_memory();
 void print_backtrace();
 
-@interface PPTSettings {
-}
+@interface PPTSettings {}
 +(BOOL)enabled;
 +(BOOL)twitterEnabled;
 +(BOOL)soundOnNewJobs;
@@ -43,18 +42,6 @@ void print_backtrace();
 +(BOOL)moreDetailedTime;
 +(BOOL)tripPickerPlanes;
 +(BOOL)eventJobsOnTop;
-#ifdef DBG
-+(void)setEnabled:(BOOL)val;
-+(void)setTwitterEnabled:(BOOL)val;
-+(void)setSoundOnNewJobs:(BOOL)val;
-+(void)setPlaneLandingNotifications:(BOOL)val;
-+(void)setSortEventProgress:(BOOL)val;
-+(void)setMapOverviewEnabled:(BOOL)val;
-+(void)setHidePlaneLabels:(BOOL)val;
-+(void)setMoreDetailedTime:(BOOL)val;
-+(void)setTripPickerPlanes:(BOOL)val;
-+(void)setEventJobsOnTop:(BOOL)val;
-#endif
 
 +(void)reconfigure;
 +(void)setup;
@@ -62,5 +49,16 @@ void print_backtrace();
 +(NSString*)pathOfUserSettingsFile;
 +(NSDictionary*)parseSettingsFile;
 @end
+
+NSComparisonResult compareEvent(NSString* first, NSString* second, void *context);
+NSComparisonResult compareJobDist(PPCargoInfo* first, PPCargoInfo* second, void *context);
+NSComparisonResult compareJobFare(PPCargoInfo* first, PPCargoInfo* second, void *context);
+NSComparisonResult comparePart(PPPlanePartInfo*, PPPlanePartInfo*, void*);
+NSComparisonResult comparePartName(PPPlanePartInfo*, PPPlanePartInfo*, void*);
+NSComparisonResult comparePartPrice(PPPlanePartInfo*, PPPlanePartInfo*, void*);
+NSComparisonResult comparePlane(PPPlaneInfo* first, PPPlaneInfo* second, void* context);
+NSComparisonResult comparePlaneClass(PPPlaneInfo* first, PPPlaneInfo* second, void* context);
+NSComparisonResult comparePlaneName(PPPlaneInfo* first, PPPlaneInfo* second, void* context);
+NSComparisonResult comparePlaneSpeed(PPPlaneInfo* first, PPPlaneInfo* second, void* context);
 
 #endif

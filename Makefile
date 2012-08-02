@@ -3,7 +3,7 @@ GO_EASY_ON_ME = 1
 include theos/makefiles/common.mk
 
 TWEAK_NAME = PocketPlanesTweaks
-PocketPlanesTweaks_FILES = Tweak.xm Settings.xm Functions.mm PPTSettingsViewController.mm
+PocketPlanesTweaks_FILES = Functions.mm Lists.xm Map.xm PlayerData.xm PPTSettingsViewController.mm Scene.xm Settings.xm Tweak.xm
 PocketPlanesTweaks_FRAMEWORKS = CoreGraphics OpenGLES UIKit Foundation
 SUBPROJECTS = pocketplanestweakspreferences
 
