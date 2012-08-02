@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ "$(hostname)" != "Jaysan" ]; then
+	echo "This script can only be run on the device."
+	exit 1
+fi
+
 syncios=$(which syncios)
 make=$(which make)
 dpkg=$(which dpkg)
