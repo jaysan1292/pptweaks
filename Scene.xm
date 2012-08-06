@@ -43,15 +43,4 @@
     %orig;
 #endif
 }
-+(void)viewNextPlane:(id)plane direction:(int)direction {
-    debug(@"+[PPScene viewNextPlane:%@ direction:%d]", [plane name], direction);
-    %orig(plane, direction);
-}
-%new +(void)logMemoryUsage {
-#ifdef DBG
-    report_memory();
-#else
-    return;
-#endif
-}
 %end //}

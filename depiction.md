@@ -37,6 +37,10 @@ Make sure to check Settings to configure!
 
 **Changelog**
 
+- 1.0.4-442
+    - Added the ability to change settings from within the app via the Settings screen
+    - If "Planes in Trip Picker" is on, other planes will appear faded when sending out a plane
+    - Some performance enhancements
 - 1.0.4-251
 	- Added the ability to sort global event jobs at the top of the jobs list
 	- Started work on an in-app interface to change tweak settings

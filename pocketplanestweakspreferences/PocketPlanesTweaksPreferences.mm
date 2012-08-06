@@ -1,5 +1,4 @@
 #import <Preferences/Preferences.h>
-#import "../Tweak.h"
 
 @interface PocketPlanesTweaksPreferencesListController: PSListController {
 }

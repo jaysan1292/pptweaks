@@ -1,5 +1,5 @@
-#ifndef HOOKCLASSES_H
-#define HOOKCLASSES_H
+#ifndef __HOOKCLASSES_H
+#define __HOOKCLASSES_H
 
 #import <OpenGLES/ES1/gl.h>
 // Cocos2D Classes and Structs {
@@ -16,15 +16,6 @@ ccc3(const GLubyte r, const GLubyte g, const GLubyte b) {
 }
 
 //ccColor3B predefined colors {
-// static const ccColor3B ccWHITE = {255,255,255};
-// static const ccColor3B ccYELLOW = {255,255,0};
-// static const ccColor3B ccBLUE = {0,0,255};
-// static const ccColor3B ccGREEN = {0,255,0};
-// static const ccColor3B ccRED = {255,0,0};
-// static const ccColor3B ccMAGENTA = {255,0,255};
-// static const ccColor3B ccBLACK = {0,0,0};
-// static const ccColor3B ccORANGE = {255,127,0};
-// static const ccColor3B ccGRAY = {166,166,166};
 #define ccWHITE ccc3(255,255,255)
 #define ccYELLOW ccc3(255,255,0)
 #define ccBLUE ccc3(0,0,255)

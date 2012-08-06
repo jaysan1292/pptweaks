@@ -16,6 +16,7 @@ What it does:
 - Play a sound when new jobs come in
 - Planes are sorted when going from plane-to-plane using the side arrows or swiping (easier seen than explained)
 - If a job is a global event job, move it to the top of the jobs list
+- Settings are in Settings.app as well as a new interface in the Settings screen in-game
 
 Planned:
 - Move dropdown bar below notification bar (instead of playing an alert sound like it does currently
@@ -26,7 +27,7 @@ Planned:
 - If a plane is full, change its appearance somehow on the Airplanes screen
 - If an airport is closed, and the time to get there is greater than the time it would take for the airport to reopen, allow the plane to fly to that airport
 - If an airport is closed, the text on the detail bar will be red when viewing that airport
-- Eventually move settings interface from Settings.app to a new interface in-game, added into the Settings layer
+- On the trip planner screen, if there are more than one destinations, display the number of passengers/cargo going to that specific city
 
 Deferred:
 - n/a
@@ -42,8 +43,12 @@ TODO NEXT:
 
 KNOWN BUGS:
 - There is a rare crash that happens when sending out a plane.
+- There is a rare crash that happens an arbitrary amount of time after you exit the in-app settings interface
 
 CHANGELOG:
+- 1.0.4-427
+    - If "Planes in Trip Picker" is on, other planes will appear faded when sending out a plane
+    - Some performance enhancements
 - 1.0.4-382
     - Added the ability to change settings from within the app via the Settings screen
 - 1.0.4-162
@@ -58,13 +63,6 @@ CHANGELOG:
 
 #define playSound(sound) [[%c(SimpleAudioEngine) sharedEngine] playEffect:[%c(CDUtilities) fullPathFromRelativePath:sound]];
 #define callMemoryCleanup() [[[%c(UIApplication) sharedApplication] delegate] applicationDidReceiveMemoryWarning:[%c(UIApplication) sharedApplication]]
-#define logMemoryUsage() [%c(PPScene) logMemoryUsage]
-
-__attribute__((constructor)) static void init() {
-    %init;
-    [PPTSettings reconfigure];
-}
-
 
 %hook AppDelegate //{
 -(void)applicationDidReceiveMemoryWarning:(id)application {
@@ -110,7 +108,7 @@ __attribute__((constructor)) static void init() {
     if([[dropdown data] isMemberOfClass:[%c(PPPlaneInfo) class]] && ![PPTSettings planeLandingNotifications]) {
         // debug(@"Dropdown is a plane landing notification, discarding.");
         log(@"%@ has landed!", [[dropdown data] name]);
-        playSound(@"alert.wav"); 
+        playSound(@"alertdouble.wav"); 
         return;
     } else {
         %orig;
@@ -121,9 +119,7 @@ __attribute__((constructor)) static void init() {
 %hook PPFlightCrewLayer //{
 -(void)loadUI {
     %orig;
-    if(![PPTSettings twitterEnabled]) {
-        disableTweetBtn();
-    }
+    disableTweetBtn();
 }
 %end //}
 
@@ -131,7 +127,7 @@ __attribute__((constructor)) static void init() {
 -(void)loadUI {
 #define X 6.0f
 #define Y 72.0f
-    debug(@"-[PPFlightLayer loadUI]");
+    // debug(@"-[PPFlightLayer loadUI]");
     %orig;
     // debug(@"Moving tweet button to (%.0f, %.0f)", X, Y);
     if([PPTSettings enabled]) {
@@ -149,22 +145,21 @@ __attribute__((constructor)) static void init() {
 %hook PPMenuLayer //{
 -(id)init {
     debug(@"-[PPMenuLayer init]");
-    id orig = %orig;
-    
-    return orig;
+    return %orig;
 }
 -(void)dealloc {
     debug(@"-[PPMenuLayer dealloc]");
     %orig;
 }
-%end
-//}
+-(void)release {
+    debug(@"-[PPMenuLayer release]");
+    %orig;
+}
+%end //}
 
 %hook PPStatsLayer //{
 -(void)loadUI {
     %orig;
-    if(![PPTSettings twitterEnabled]) {
-        disableTweetBtn();
-    }
+    disableTweetBtn();
 }
 %end //}

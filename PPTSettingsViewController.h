@@ -1,8 +1,12 @@
+#ifndef __PPTSETTINGSVIEWCONTROLLER_H
+#define __PPTSETTINGSVIEWCONTROLLER_H
+
 #import "Tweak.h"
 
 @interface PPTSettingsViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>{
 NSDictionary* settings;
 NSMutableDictionary* userSettings;
+NSMutableDictionary* settingMap;
 UIView* contentView;
 UINavigationBar* navBar;
 UITableView* settingsTableView;
@@ -14,3 +18,5 @@ UITableView* settingsTableView;
 @property (nonatomic, retain) UINavigationBar* navBar;
 @property (nonatomic, retain) UITableView* settingsTableView;
 @end
+
+#endif

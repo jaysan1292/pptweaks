@@ -34,6 +34,8 @@
     
     [self.view addSubview:navBar];
     
+    [exitButton release];
+    [navItem release];
     [navBar release];
     
     settingsTableView = [[UITableView alloc] initWithFrame:CGRectMake(0,44,320,436) style:UITableViewStyleGrouped];
@@ -43,7 +45,7 @@
     [settingsTableView setDataSource:self];
     [settingsTableView setDelegate:self];
     
-    [[self view] addSubview:settingsTableView];
+    [self.view addSubview:settingsTableView];
     
     [settingsTableView release];
 }
@@ -60,21 +62,22 @@
     [UIView commitAnimations];
 }
 -(void)closeAnimationDidFinish:(NSString*)animationID finished:(NSNumber*)finished context:(void*)context {
-    debug(@"self.view.retainCount: %d", self.view.retainCount);
     [self.view removeFromSuperview];
-    debug(@"self.view.retainCount: %d", self.view.retainCount);
 }
 
 -(void)didReceiveMemoryWarning {
+    debug(@"-[PPTSettingsViewController didReceiveMemoryWarning]");
     [super didReceiveMemoryWarning];
 }
 -(void)dealloc {
     debug(@"-[PPTSettingsViewController dealloc]");
+    
     [settings release];
     [userSettings release];
+    [settingMap release];
+    
     [super dealloc];
 }
-
 // View lifecycle
 -(void)viewDidLoad {
     [super viewDidLoad];
@@ -85,14 +88,20 @@
     self.userSettings = [NSMutableDictionary dictionaryWithContentsOfFile:[PPTSettings pathOfUserSettingsFile]];
     self.settingMap = [[NSMutableDictionary alloc] initWithCapacity:1];
 }
+-(void)viewWillUnload {
+    debug(@"-[PPTSettingsViewController viewWillUnload]");    
+    [super viewWillUnload];
+}
 -(void)viewDidUnload {
-    [super viewDidUnload];
-    
     debug(@"-[PPTSettingsViewController viewDidUnload]");
     
     self.settings = nil;
     self.userSettings = nil;
     self.settingMap = nil;
+    [self.view release];
+    [self release];
+    
+    [super viewDidUnload];
 }
 -(void)viewWillAppear:(BOOL)animated {
     debug(@"-[PPTSettingsViewController viewWillAppear:%@]", boolToString(animated));
@@ -109,6 +118,7 @@
 -(void)viewDidDisappear:(BOOL)animated {
     debug(@"-[PPTSettingsViewController viewDidDisappear:%@]", boolToString(animated));
     [super viewDidDisappear:animated];
+    [self release];
 }
 -(BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     return YES;
@@ -149,7 +159,7 @@
     if([[self.settingMap allKeysForObject:sender] count] != 0) {
         NSString* key = [[self.settingMap allKeysForObject:sender] objectAtIndex:0];
         
-        debug(@"Setting %@ %@", key, sender.on ? @"ON" : @"OFF");
+        log(@"Setting %@ %@", key, sender.on ? @"ON" : @"OFF");
         
         [self.userSettings setValue:[NSNumber numberWithBool:sender.on] forKey:key];
         

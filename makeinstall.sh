@@ -22,7 +22,7 @@ suffix="_iphoneos-arm.deb"
 newest_deb="$prefix$version-$build$suffix"
 
 cd $build_dir
-mv *.deb ../Debian\ Archives 2>/dev/null
+mv *.deb ../Debian\ Archives >/dev/null 2>&1
 clear
 echo "-----
 make package && dpkg -i $newest_deb && killall -9 \"Pocket Planes\"

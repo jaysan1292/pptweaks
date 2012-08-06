@@ -4,7 +4,7 @@
 
 %hook PPCraftingLayer //{
 -(void)loadUI {
-#define _partList getIvar(self, "items")
+#define partList getIvar(self, "items")
     if([PPTSettings enabled]) {
         debug(@"-[PPCraftingLayer loadUI]");
         startTimeLog(start);
@@ -13,36 +13,21 @@
         
         object_getInstanceVariable(self, "filter", (void**)&filter);
         if(filter == 1) {
-            [_partList sortUsingFunction:comparePlane context:nil];
+            [partList sortUsingFunction:comparePlane context:nil];
         }
         
-        endTimeLog(start, @"-[PPCraftingLayer loadUI]: Loading %d %s", [_partList count], filter == 1 ? "planes" : "parts");
+        endTimeLog(start, @"-[PPCraftingLayer loadUI]: Loading %d %s", [partList count], filter == 1 ? "planes" : "parts");
         callMemoryCleanup();
     } else {
         %orig;
     }
+#undef partList
 }
 %end //}
 
 %hook PPEventsLayer //{
-// Sort functions {
-NSComparisonResult compareEvent(NSString* first, NSString* second, void *context) {
-    //should pass in each string in "xx:xx" format
-    NSArray *a = [first componentsSeparatedByString:@":"];
-    NSArray *b = [second componentsSeparatedByString:@":"];
-
-    if ([[a objectAtIndex:1] intValue] > [[b objectAtIndex:1] intValue])
-        return NSOrderedAscending;
-    else if ([[a objectAtIndex:1] intValue] < [[b objectAtIndex:1] intValue])
-        return NSOrderedDescending;
-    else
-        return NSOrderedSame;
-}
-// }
 -(id)initWithFilter:(int)filter {
 #define _eventList getIvar(self, "items")
-#define _playerEventCount [[[%c(PPScene) sharedScene] playerData] getMeta:@"eventCount"]
-#define _globalEventId [[[%c(PPScene) sharedScene] playerData] getMeta:@"globalEvent"]
     if([PPTSettings enabled]) {
         debug(@"-[PPEventsLayer initWithFilter:%d]", filter);
         if(filter == 1) {
@@ -51,34 +36,29 @@ NSComparisonResult compareEvent(NSString* first, NSString* second, void *context
             return eventsLayer;
         } else {
             startTimeLog(start);
-            startTimeLog(sort);
             id eventsLayer = %orig;
             
             if([PPTSettings sortEventProgress]) {
+                startTimeLog(sort);
+                
                 debug(@"Sorting events list.");
                 [_eventList sortUsingFunction:compareEvent context:nil];
                 
                 endTimeLog(sort, @"Sorting %d events", [_eventList count]);
-                
-                // Add the global event information to the top of the list
-                // Create a string in the format XX:XX that has the eventID in before the colon, and the player's amount in the second
-                // ^ this doesn't actually work, since the global event could have an ID that conflicts with the built-in one
-                // only way to go here is to reimplement this function
-                // [_eventList insertObject:[NSString stringWithFormat:@"%@:%@", _globalEventId, _playerEventCount] atIndex:0];
-                
-                endTimeLog(start, @"-[PPEventsLayer initWithFilter]");
             }
+            endTimeLog(start, @"-[PPEventsLayer initWithFilter]");
             return eventsLayer;
         }
     }
 #undef _eventList
-#undef _playerEventCount
-#undef _globalEventId
 }
 %end //}
 
 %hook PPFlightLog //{
-
+-(void)loadUI {
+    %orig;
+    callMemoryCleanup();
+}
 %end //}
 
 %hook PPHangarLayer //{
@@ -92,34 +72,6 @@ NSComparisonResult compareEvent(NSString* first, NSString* second, void *context
 %end //}
 
 %hook PPJobsLayer //{
-// Sort functions {
-NSComparisonResult compareJobFare(PPCargoInfo* first, PPCargoInfo* second, void *context) {
-#define firstFare [%c(PPScene) fareFrom:[%c(PPCityInfo) cityInfoWithId:[first start_city_id]] to:[%c(PPCityInfo) cityInfoWithId:[first end_city_id]]]
-#define secondFare [%c(PPScene) fareFrom:[%c(PPCityInfo) cityInfoWithId:[second start_city_id]] to:[%c(PPCityInfo) cityInfoWithId:[second end_city_id]]]
-    if(firstFare > secondFare) {
-        return NSOrderedAscending;
-    } else if(firstFare < secondFare) {
-        return NSOrderedDescending;
-    } else {
-        return NSOrderedSame;
-    }
-#undef firstFare
-#undef secondFare
-}
-NSComparisonResult compareJobDist(PPCargoInfo* first, PPCargoInfo* second, void *context) {
-#define firstDist [%c(PPScene) distBetween:[%c(PPCityInfo) cityInfoWithId:[first end_city_id]] to:context]
-#define secondDist [%c(PPScene) distBetween:[%c(PPCityInfo) cityInfoWithId:[second end_city_id]] to:context]
-    if(firstDist > secondDist) {
-        return NSOrderedAscending;
-    } else if(firstDist < secondDist) {
-        return NSOrderedDescending;
-    } else {
-        return NSOrderedSame;
-    }
-#undef firstDist
-#undef secondDist
-}
-// }
 -(id)initWithCity:(id)city plane:(id)plane fiter:(int)fiter {
 #define _jobList getIvar(orig, "jobs")
     debug(@"-[PPJobsLayer initWithCity:%@ plane:%@ fiter:%d]", [city name], [[plane info] name], fiter);
@@ -164,11 +116,6 @@ NSComparisonResult compareJobDist(PPCargoInfo* first, PPCargoInfo* second, void 
     debug(@"-[PPJobsLayer loadUI]");
     %orig;
     callMemoryCleanup();
-}
--(void)refreshCityJobs:(id)jobs {
-    // id jobs = PPDialog
-    debug(@"-[PPJobsLayer refreshCityJobs:%@]", getIvar(jobs, "_target"));
-    %orig;
 }
 %end //}
 
