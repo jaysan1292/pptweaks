@@ -28,6 +28,7 @@ Planned:
 - If an airport is closed, and the time to get there is greater than the time it would take for the airport to reopen, allow the plane to fly to that airport
 - If an airport is closed, the text on the detail bar will be red when viewing that airport
 - On the trip planner screen, if there are more than one destinations, display the number of passengers/cargo going to that specific city
+- If a job is an event job, move it to the top of the jobs list
 
 Deferred:
 - n/a
@@ -38,14 +39,14 @@ Configuration:
 
 TODO NEXT:
 - Use NSUserDefaults for default values
-- There is a pretty big memory leak in the tweak settings screen.
-- Tweak.xm is too large. Split it up into more files.
 
 KNOWN BUGS:
 - There is a rare crash that happens when sending out a plane.
 - There is a rare crash that happens an arbitrary amount of time after you exit the in-app settings interface
 
 CHANGELOG:
+- 1.0.4-457
+    - Normal event jobs can now be placed at the top of the job list, as global events are
 - 1.0.4-427
     - If "Planes in Trip Picker" is on, other planes will appear faded when sending out a plane
     - Some performance enhancements

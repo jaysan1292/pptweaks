@@ -50,7 +50,7 @@
         },
         {
             cell = PSGroupCell;
-            footerText = "Play Sound on New Jobs: Play a \"dink\" sound when new jobs come in.\n\nMore Detailed Time: Changes time display to show more detailed times.\nExample: Instead of \"<1M\", show \"40s\"\n\nSort Event Progress: Sort events in the Events screen by progress made.\n\nPlane Landing Notifications: If off, instead of showing a dropdown notification, play a sound.";
+            footerText = "Play Sound on New Jobs: Play a \"dink\" sound when new jobs come in.\n\nMore Detailed Time: Changes time display to show more detailed times.\nExample: Instead of \"<1M\", show \"40s\"\n\nSort Event Progress: Sort events in the Events screen by progress made.\n\nPlane Landing Notifications: If off, instead of showing a dropdown notification, play a sound.\n\nSort Events Below Plane Class: If on, all events regardless of plane class will be sorted to the top of the list, and if off, only events for cities that the current plane can travel to will be sorted to the top. Has no effect if both Global Event Jobs on Top and Normal Event Jobs on Top are off.";
             label = Miscellaneous;
         },
         {
@@ -85,8 +85,22 @@
             cell = PSSwitchCell;
             default = 0;
             defaults = "com.jaysan1292.pptweaksprefs";
-            key = EventJobsOnTop;
-            label = "Event Jobs on Top";
+            key = GlobalEventJobsOnTop;
+            label = "Global Event Jobs on Top";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 0;
+            defaults = "com.jaysan1292.pptweaksprefs";
+            key = NormalEventJobsOnTop;
+            label = "Normal Event Jobs on Top";
+        },
+        {
+            cell = PSSwitchCell;
+            default = 1;
+            defaults = "com.jaysan1292.pptweaksprefs";
+            key = SortEventsBelowClass;
+            label = "Sort Events Below Plane Class";
         },
         {
             cell = PSGroupCell;

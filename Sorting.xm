@@ -91,20 +91,16 @@ NSComparisonResult comparePlaneSpeed(PPPlaneInfo* first, PPPlaneInfo* second, vo
 }
 
 NSComparisonResult comparePlaneName(PPPlaneInfo* first, PPPlaneInfo* second, void* context) {
-    #define PPPassengerPlane 1
-    #define PPCargoPlane 2
-    #define PPMixedPlane 3
+    PPPlaneType firstType = PPNilPlaneType;
+    PPPlaneType secondType = PPNilPlaneType;
     
-    int firstType = 0;
-    int secondType = 0;
+    if(first.cargoRows == 0 && first.passRows != 0) firstType = PPPassengerPlaneType;
+    else if(first.cargoRows != 0 && first.passRows == 0) firstType = PPCargoPlaneType;
+    else if(first.cargoRows != 0 && first.passRows != 0) firstType = PPMixedPlaneType;
     
-    if(first.cargoRows == 0 && first.passRows != 0) firstType = PPPassengerPlane;
-    else if(first.cargoRows != 0 && first.passRows == 0) firstType = PPCargoPlane;
-    else if(first.cargoRows != 0 && first.passRows != 0) firstType = PPMixedPlane;
-    
-    if(second.cargoRows == 0 && second.passRows != 0) secondType = PPPassengerPlane;
-    else if(second.cargoRows != 0 && second.passRows == 0) secondType = PPCargoPlane;
-    else if(second.cargoRows != 0 && second.passRows != 0) secondType = PPMixedPlane;
+    if(second.cargoRows == 0 && second.passRows != 0) secondType = PPPassengerPlaneType;
+    else if(second.cargoRows != 0 && second.passRows == 0) secondType = PPCargoPlaneType;
+    else if(second.cargoRows != 0 && second.passRows != 0) secondType = PPMixedPlaneType;
     
     // return firstType < secondType ? NSOrderedDescending : firstType > secondType ? NSOrderedAscending : NSOrderedSame;
     return firstType < secondType ? NSOrderedAscending : firstType > secondType ? NSOrderedDescending : NSOrderedSame;

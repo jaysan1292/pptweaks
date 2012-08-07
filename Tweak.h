@@ -8,7 +8,7 @@
 #import "PPTSettings.h"
 #import "hookclasses.h"
 
-// #define DBG
+#define DBG
 
 #define boolToString(x) (x ? @"YES" : @"NO")
 #define ccp(_X_,_Y_) CGPointMake(_X_,_Y_)
@@ -31,6 +31,13 @@ float get_memory();
 NSString* return_memory();
 void report_memory();
 void print_backtrace();
+
+typedef enum {
+    PPNilPlaneType,
+    PPPassengerPlaneType,
+    PPCargoPlaneType,
+    PPMixedPlaneType
+} PPPlaneType;
 
 NSComparisonResult compareEvent(NSString* first, NSString* second, void *context);
 NSComparisonResult compareJobDist(PPCargoInfo* first, PPCargoInfo* second, void *context);
