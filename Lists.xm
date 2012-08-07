@@ -9,6 +9,19 @@
 }
 %end //}
 
+%hook PPArrivalsLayer //{
+/*
+cycript stuff
+var planelist = [[PPScene sharedScene] menuLayer]
+var pplist = object_getIvar(planelist, class_getInstanceVariable([planelist class], "list"))
+var item = [pplist itemAtIndex:0]
+*/
+-(void)loadUI {
+    %orig;
+    callMemoryCleanup();
+}
+%end //}
+
 %hook PPCraftingLayer //{
 -(void)loadUI {
 #define partList getIvar(self, "items")
@@ -79,6 +92,12 @@
 %end //}
 
 %hook PPJobsLayer //{
+/*
+cycript stuff
+var joblayer = [[PPScene sharedScene]menuLayer]
+var list = object_getIvar(joblayer, class_getInstanceVariable([joblayer class], "list"))
+var item = [list itemAtIndex:1]
+*/
 -(id)initWithCity:(id)city plane:(id)plane fiter:(int)fiter {
     debug(@"-[PPJobsLayer initWithCity:%@ plane:%@ fiter:%d]", [city name], [[plane info] name], fiter);
     
@@ -108,15 +127,15 @@
         
         [allEvents addObjectsFromArray:[[[%c(PPScene) sharedScene] playerData] events]];
 
-        // don't process weather events
-        NSMutableArray* weatherEvents = [[NSMutableArray alloc] initWithCapacity:1];
+        // don't process weather events and events that already have been completed
+        NSMutableArray* eventsToRemove = [[NSMutableArray alloc] initWithCapacity:1];
         
         for(id event in allEvents)
-            if([event isWeather]) [weatherEvents addObject:event];
-            
-        [allEvents removeObjectsInArray:weatherEvents];
+            if([event isWeather] || [[[%c(PPScene) sharedScene] playerData] isLocalEventComplete:[event event_info_id]]) [eventsToRemove addObject:event];
         
-        [weatherEvents release];
+        [allEvents removeObjectsInArray:eventsToRemove];
+        
+        [eventsToRemove release];
         
         int planeClass = (int)[[plane info] class_lvl];
         NSMutableArray* cities = [[NSMutableArray alloc] init];

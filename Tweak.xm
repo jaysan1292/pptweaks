@@ -41,10 +41,11 @@ TODO NEXT:
 - Use NSUserDefaults for default values
 
 KNOWN BUGS:
-- There is a rare crash that happens when sending out a plane.
-- There is a rare crash that happens an arbitrary amount of time after you exit the in-app settings interface
+- There is a rare crash that happens when sending out a plane, that usually occurs when another plane lands
 
 CHANGELOG:
+- 1.0.4-490
+    - Completed normal events are not included when placing event jobs at the top of the job list
 - 1.0.4-457
     - Normal event jobs can now be placed at the top of the job list, as global events are
 - 1.0.4-427
@@ -71,14 +72,6 @@ CHANGELOG:
     %orig;
     float memory_delta = memory_usage - get_memory();
     if(memory_delta >= 0) log(@"Freed up %.4f MB of memory.", memory_delta);
-}
-%end //}
-
-%hook PPArrivalsLayer //{
--(void)loadUI {
-    debug(@"-[PPArrivalsLayer loadUI]");
-    %orig;
-    callMemoryCleanup();
 }
 %end //}
 
