@@ -91,8 +91,8 @@ NSComparisonResult comparePlaneSpeed(PPPlaneInfo* first, PPPlaneInfo* second, vo
 }
 
 NSComparisonResult comparePlaneName(PPPlaneInfo* first, PPPlaneInfo* second, void* context) {
-    PPPlaneType firstType = PPNilPlaneType;
-    PPPlaneType secondType = PPNilPlaneType;
+    PPPlaneType firstType;
+    PPPlaneType secondType;
     
     if(first.cargoRows == 0 && first.passRows != 0) firstType = PPPassengerPlaneType;
     else if(first.cargoRows != 0 && first.passRows == 0) firstType = PPCargoPlaneType;

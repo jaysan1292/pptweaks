@@ -33,7 +33,6 @@ void report_memory();
 void print_backtrace();
 
 typedef enum {
-    PPNilPlaneType,
     PPPassengerPlaneType,
     PPCargoPlaneType,
     PPMixedPlaneType
