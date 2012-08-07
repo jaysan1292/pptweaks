@@ -2,6 +2,13 @@
 
 #define callMemoryCleanup() [[[%c(UIApplication) sharedApplication] delegate] applicationDidReceiveMemoryWarning:[%c(UIApplication) sharedApplication]]
 
+%hook PPAirpedia //{
+-(void)loadUI {
+    %orig;
+    callMemoryCleanup();
+}
+%end //}
+
 %hook PPCraftingLayer //{
 -(void)loadUI {
 #define partList getIvar(self, "items")
@@ -73,20 +80,34 @@
 
 %hook PPJobsLayer //{
 -(id)initWithCity:(id)city plane:(id)plane fiter:(int)fiter {
-#define _jobList getIvar(orig, "jobs")
     debug(@"-[PPJobsLayer initWithCity:%@ plane:%@ fiter:%d]", [city name], [[plane info] name], fiter);
     
     startTimeLog(start);
-    id orig = %orig;
+    id outLayer = %orig;
     
-    if(![PPTSettings enabled]) return orig;
+    if(![PPTSettings enabled]) return outLayer;
     
-    if([PPTSettings normalEventJobsOnTop] && city != nil) {
+    if([PPTSettings normalEventJobsOnTop]) [self moveNormalEventJobsToTop:outLayer city:city plane:plane];
+    if([PPTSettings globalEventJobsOnTop]) [self moveGlobalEventJobsToTop:outLayer city:city plane:plane];
+    
+    endTimeLog(start, @"Loading %d jobs", [getIvar(outLayer, "jobs") count]);
+    return outLayer;
+}
+-(void)loadUI {
+    debug(@"-[PPJobsLayer loadUI]");
+    %orig;
+    callMemoryCleanup();
+}
+%new -(void)moveNormalEventJobsToTop:(id)layer city:(id)city plane:(id)plane {
+#define _jobList getIvar(layer, "jobs")
+    if(city != nil) {
+        startTimeLog(nEvent);
+        
         NSMutableArray* allEvents = [[NSMutableArray alloc] initWithCapacity:1];
         NSMutableArray* normalEventJobs = [[NSMutableArray alloc] initWithCapacity:1];
         
         [allEvents addObjectsFromArray:[[[%c(PPScene) sharedScene] playerData] events]];
-        // [allEvents removeObjectsInArray:[%c(PPCityEventInfo) allCityWeather]]; // don't process weather events
+
         // don't process weather events
         NSMutableArray* weatherEvents = [[NSMutableArray alloc] initWithCapacity:1];
         
@@ -97,15 +118,37 @@
         
         [weatherEvents release];
         
-        // Take the event jobs
+        int planeClass = (int)[[plane info] class_lvl];
+        NSMutableArray* cities = [[NSMutableArray alloc] init];
+        [cities addObjectsFromArray:[[[%c(PPScene) sharedScene] playerData] unlockedCities]];
+        
+        // Take the event jobs...
         for(int i = [_jobList count] - 1; i >= 0; i--) {
             #define theJob [_jobList objectAtIndex:i]
-            // debug(@"Processing job to %@", [[%c(PPCityInfo) cityInfoWithId:[theJob end_city_id]] name]);
             for(int j = 0; j < [allEvents count]; j++) {
                 #define theEvent [allEvents objectAtIndex:j]
-                if((int)[theJob end_city_id] == (int)[theEvent city_id] && [theEvent active]) { 
-                    debug(@"Found event job: %@ - %@", [[%c(PPCityInfo) cityInfoWithId:[theJob end_city_id]] name], [theEvent name]);
-                    [normalEventJobs addObject:theJob]; 
+                
+                //skip processing entirely if the event is not active
+                if(![theEvent active]) continue;
+                
+                int cityClass = 0;
+                for(int k = 0; k < [cities count]; k++) {
+                    #define theCity [cities objectAtIndex:k]
+                        if([theCity city_id] == [theEvent city_id]) {
+                            cityClass = [theCity class_lvl];
+                            break;
+                        }
+                    #undef theCity
+                }
+                
+                if((int)[theJob end_city_id] == (int)[theEvent city_id]) {
+                    // debug(@"Processing class %d city: %@", [[cities
+                    // If sortEventsBelowClass is OFF *and* the plane can travel
+                    // to the city, OR if sortEventsBelowClass is ON, then add
+                    // it to the list of jobs to move to the top
+                    if(![PPTSettings sortEventsBelowClass] && planeClass <= cityClass || [PPTSettings sortEventsBelowClass]) {
+                        [normalEventJobs addObject:theJob]; 
+                    }
                 }
                 #undef theEvent
             }
@@ -114,7 +157,7 @@
         
         [_jobList removeObjectsInArray:normalEventJobs]; // Ensure there are no duplicate jobs
         
-        // And put them at the top
+        // ...and put them at the top
         for(int k = 0; k < [normalEventJobs count]; k++) 
             [_jobList insertObject:[normalEventJobs objectAtIndex:k] atIndex:1];
         
@@ -122,9 +165,17 @@
         
         [allEvents release];
         [normalEventJobs release];
+        [cities release];
+        
+        endTimeLog(nEvent, @"Looking for normal event jobs");
     }
+#undef _jobList
+}
+%new -(void)moveGlobalEventJobsToTop:(id)layer city:(id)city plane:(id)plane {
+#define _jobList getIvar(layer, "jobs")
+    if(city != nil) {
+        startTimeLog(gEvent);
     
-    if([PPTSettings globalEventJobsOnTop] && city != nil) {
         int globalEvent = (int)[[[[%c(PPScene) sharedScene] playerData] globalEvent] city_id];
         NSMutableArray* eventJobs = [[NSMutableArray alloc] initWithCapacity:1];
         
@@ -145,16 +196,10 @@
         if([eventJobs count] != 0) log(@"Found %d global event jobs!", [eventJobs count]);
         
         [eventJobs release];
+        
+        endTimeLog(gEvent, @"Looking for global event jobs");
     }
-    
-    endTimeLog(start, @"Loading %d jobs", [_jobList count]);
-    return orig;
 #undef _jobList
-}
--(void)loadUI {
-    debug(@"-[PPJobsLayer loadUI]");
-    %orig;
-    callMemoryCleanup();
 }
 %end //}
 

@@ -1,0 +1,15 @@
+<NotepadPlus>
+    <Session activeView="0">
+        <mainView activeIndex="2">
+            <File firstVisibleLine="42" xOffset="0" scrollWidth="2695" startPos="2567" endPos="2567" selMode="0" lang="Objective-C" encoding="-1" filename="H:\iosdev\pocketplanestweaks\Tweak.xm" />
+            <File firstVisibleLine="204" xOffset="0" scrollWidth="2695" startPos="4384" endPos="4384" selMode="0" lang="Objective-C" encoding="-1" filename="H:\iosdev\pocketplanestweaks\Map.xm" />
+            <File firstVisibleLine="41" xOffset="0" scrollWidth="2695" startPos="1699" endPos="1699" selMode="0" lang="Objective-C" encoding="-1" filename="H:\iosdev\pocketplanestweaks\Sorting.xm" />
+            <File firstVisibleLine="16" xOffset="0" scrollWidth="2695" startPos="356" endPos="356" selMode="0" lang="Objective-C" encoding="-1" filename="H:\iosdev\pocketplanestweaks\Scene.xm" />
+            <File firstVisibleLine="135" xOffset="0" scrollWidth="4809" startPos="4583" endPos="4583" selMode="0" lang="Objective-C" encoding="-1" filename="H:\iosdev\pocketplanestweaks\Lists.xm" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="4809" startPos="284" endPos="284" selMode="0" lang="Objective-C" encoding="-1" filename="H:\iosdev\pocketplanestweaks\PlayerData.xm" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="4809" startPos="0" endPos="0" selMode="0" lang="Objective-C" encoding="-1" filename="H:\iosdev\pocketplanestweaks\Settings.xm" />
+            <File firstVisibleLine="74" xOffset="0" scrollWidth="4809" startPos="3401" endPos="3401" selMode="0" lang="Objective-C" encoding="-1" filename="H:\iosdev\pocketplanestweaks\Stats.xm" />
+        </mainView>
+        <subView activeIndex="0" />
+    </Session>
+</NotepadPlus>

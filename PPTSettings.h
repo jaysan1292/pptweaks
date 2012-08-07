@@ -19,7 +19,9 @@
 +(BOOL)hidePlaneLabels;
 +(BOOL)moreDetailedTime;
 +(BOOL)tripPickerPlanes;
-+(BOOL)eventJobsOnTop;
++(BOOL)globalEventJobsOnTop;
++(BOOL)normalEventJobsOnTop;
++(BOOL)sortEventsBelowClass;
 @end
 
 #endif
