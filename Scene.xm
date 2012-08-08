@@ -9,7 +9,7 @@
         int hours = (string/(60*60))%24;
         int minutes = (string/60)%60;
         int seconds = (int)(10 * ceil((string%60) / 10 + 0.5));
-        // if((string+1)%60 == 0){ minutes++; seconds = 0; }
+        
         if(seconds == 60) { minutes++; seconds = 0; }
         if(minutes == 60) { hours++; minutes = 0; }
         if(hours == 24) { days++; hours = 0; }

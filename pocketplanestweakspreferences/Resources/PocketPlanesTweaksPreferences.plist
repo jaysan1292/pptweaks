@@ -2,7 +2,6 @@
     items = (
         {
             cell = PSGroupCell;
-            label = "Enable Tweak";
         },
         {
             cell = PSSwitchCell;

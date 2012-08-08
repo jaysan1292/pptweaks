@@ -14,60 +14,67 @@ var dot = object_getIvar(la, class_getInstanceVariable([la class], "dot"))
 -(void)zoomMapOut {
     debug(@"-[PPMapLayer zoomMapOut]");
     %orig;
-    if([PPTSettings enabled]) {
-        [self setVisibleCities];
-        [self scalePlanes];
-    }
+    
+    if(![PPTSettings enabled]) return;
+    
+    [self setVisibleCities];
+    [self scalePlanes];
 }
 -(void)zoomMapIn {
     debug(@"-[PPMapLayer zoomMapIn]");
     %orig;
-    if([PPTSettings enabled]) {
-        [self setVisibleCities];
-        [self scalePlanes];
-    }
+    
+    if(![PPTSettings enabled]) return;
+    
+    [self setVisibleCities];
+    [self scalePlanes];    
 }
 -(void)loadMapUI {
     debug(@"-[PPMapLayer loadMapUI]");
     startTimeLog(start);
     %orig;
-    if([PPTSettings enabled]) {
-        [self setVisibleCities];
-        if([self tripPicker]) {
-            if([PPTSettings tripPickerPlanes]) {
-                [self fadePlanes];
-            } else {
-                [self hidePlanes];
-            }
-        }
-        [self scalePlanes];
+    
+    if(![PPTSettings enabled]) return;
         
-        disableTweetBtn();
+    [self setVisibleCities];
+    if([self tripPicker]) {
+        if([PPTSettings tripPickerPlanes]) {
+            [self fadePlanes];
+        } else {
+            [self hidePlanes];
+        }
     }
+    [self scalePlanes];
+
+    disableTweetBtn();
+    
     callMemoryCleanup();
     endTimeLog(start, @"-[PPMapLayer loadMapUI]");
 }
 -(void)addCityToTrip:(id)trip {
     debug(@"-[PPMapLayer addCityToTrip:%@]", [trip name]);
-    
-    // TODO: if clicked city isClosed, 
+
+    // TODO: if clicked city isClosed,
     // check if the time remaining is greater than the flight time.
     // if true, then allow plane to fly there, else disallow it
     %orig;
+    
+    if(![PPTSettings enabled]) return;
+
     [self setVisibleCities];
 }
 -(void)removeLastLegFromTrip {
     debug(@"-[PPMapLayer removeLastLegFromTrip]");
     %orig;
+    
+    if(![PPTSettings enabled]) return;
+
     [self setVisibleCities];
 }
 %new -(void)setVisibleCities {
 #define setDotOpacity(x) [getIvar(city, "dot") setOpacity:x]; [getIvar(city, "countLbl") setOpacity:x]
-    // If tweak is disabled, bail out early
-    if(![PPTSettings enabled]) return;
-    
     startTimeLog(start);
-    
+
     float mapScale = [[[[%c(PPScene) sharedScene] playerData] getMeta:@"mapZ"] floatValue];
     NSMutableArray* mapCities = getIvar(self, "mapCities");
 
@@ -77,9 +84,9 @@ var dot = object_getIvar(la, class_getInstanceVariable([la class], "dot"))
             for(int i = 0; i < [mapCities count]; i++) {
             #define city [mapCities objectAtIndex:i]
                 if(isObject(city)) {
-                    if([city isKindOfClass:[%c(PPCity) class]]) {
+                    if([city isKindOfClass:[%c(PPCity) class]] && city != nil) {
                         if(![[city info] isLocked]) {
-                            
+
                             // Scale the thing so it's more visible when zoomed out
                             if (mapScale == 0.25f) {
                                 [city setScale:2.0f];
@@ -104,13 +111,13 @@ var dot = object_getIvar(la, class_getInstanceVariable([la class], "dot"))
                                 [city setVisible:YES];
                                 [self displayLabelForCity:city show:NO];
                             }
-                            
+
                             if([[city info] isClosed]) {
                                 setDotOpacity(64);
                             } else {
                                 setDotOpacity(255);
                             }
-                            
+
                         }
                     }
                 } else { debug(@"Warning! Thing in array is not an object D:"); } // This line should *never* be executed
@@ -127,7 +134,7 @@ var dot = object_getIvar(la, class_getInstanceVariable([la class], "dot"))
                                 [city setScale:1.0f];
                                 [self displayLabelForCity:city show:YES];
                             }
-                            
+
                             if([[city info] isClosed]) {
                                 setDotOpacity(64);
                             } else {
@@ -145,31 +152,25 @@ var dot = object_getIvar(la, class_getInstanceVariable([la class], "dot"))
 #undef setDotOpacity(x)
 }
 %new -(void)hidePlanes {
-    // If tweak is disabled, bail out early
-    if(![PPTSettings enabled]) return;
-    
     // debug(@"-[PPMapLayer hidePlanes]");
     startTimeLog(start);
     NSMutableArray* mapPlanes = getIvar(self, "mapPlanes");
-    
+
     for(PPMapPlane* plane in mapPlanes) {
         if(!plane.showRange) {
             [plane setVisible:NO];
         }
     }
-    
+
     endTimeLog(start, @"-[PPMapLayer hidePlanes]");
 }
 %new -(void)scalePlanes {
-    // If tweak is disabled, bail out early
-    if(![PPTSettings enabled]) return;
-    
     // debug(@"-[PPMapLayer scalePlanes]");
     if([PPTSettings mapOverviewEnabled]) {
         float mapScale = [[[[%c(PPScene) sharedScene] playerData] getMeta:@"mapZ"] floatValue];
         NSMutableArray* mapPlanes = getIvar(self, "mapPlanes");
         startTimeLog(start);
-        
+
         // debug(@"Scaling planes based on zoom level.");
         for(PPMapPlane* plane in mapPlanes) {
             if(![plane showRange]) {
@@ -188,13 +189,10 @@ var dot = object_getIvar(la, class_getInstanceVariable([la class], "dot"))
     }
 }
 %new -(void)fadePlanes {
-    // If tweak is disabled, bail out early
-    if(![PPTSettings enabled]) return;
-    
     startTimeLog(start);
-    
+
     NSMutableArray* mapPlanes = getIvar(self, "mapPlanes");
-    
+
     for(PPMapPlane* plane in mapPlanes) {
         if([self tripPicker] && ![plane showRange]) {
             [getIvar(plane, "pMarker")  setOpacity:72];
@@ -202,7 +200,7 @@ var dot = object_getIvar(la, class_getInstanceVariable([la class], "dot"))
             [getIvar(plane, "nameLbl")  setOpacity:72];
         }
     }
-    
+
     endTimeLog(start, @"-[PPMapLayer fadePlanes]");
 }
 %new -(void)displayLabelForCity:(id)city show:(BOOL)show {
@@ -222,23 +220,27 @@ var mapPlanes = object_getIvar(ppMapLayer, class_getInstanceVariable([ppMapLayer
 var plane = [mapPlanes objectAtIndex:0]
 */
 -(id)initWithInfo:(id)info trip:(id)trip {
-    CCNode* mapplane = %orig;
-    
-    // If tweak is disabled, bail out early
-    if(![PPTSettings enabled]) return mapplane;
+    CCNode* plane = %orig;
 
-    [self hidePlaneLabels:mapplane];
+    // If tweak is disabled, bail out early
+    if(![PPTSettings enabled]) return plane;
     
-    return mapplane;
+    [self hidePlaneLabel:plane];
+    
+    return plane;
 }
-%new -(void)hidePlaneLabels:(PPMapPlane*)plane {
+%new -(void)hidePlaneLabel:(PPMapPlane*)plane {
     if([PPTSettings hidePlaneLabels]) {
+        startTimeLog(start);
+        
         [getIvar(plane, "planeLbl") setVisible:NO];
         [getIvar(plane, "nameLbl") setVisible:NO];
 
         if([[[plane parent] parent] tripPicker]) {
             [getIvar(plane, "pMarker") setVisible:NO];
         }
+        
+        endTimeLogD(start, @"Hiding plane label for %@", [[plane info] name]);
     }
 }
 %end //}
