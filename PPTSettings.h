@@ -22,6 +22,7 @@
 +(BOOL)globalEventJobsOnTop;
 +(BOOL)normalEventJobsOnTop;
 +(BOOL)sortEventsBelowClass;
++(BOOL)advertisedJobsOnTop;
 @end
 
 #endif

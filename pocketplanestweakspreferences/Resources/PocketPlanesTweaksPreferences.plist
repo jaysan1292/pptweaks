@@ -107,6 +107,13 @@
             label = "Plane Landing Notifications";
         },
         {
+            cell = PSSwitchCell;
+            default = 0;
+            defaults = "com.jaysan1292.pptweaksprefs";
+            key = AdvertisedJobsOnTop;
+            label = "Advertised Jobs on Top";
+        },
+        {
             cell = PSGroupCell;
             isStaticText = 1;
         },

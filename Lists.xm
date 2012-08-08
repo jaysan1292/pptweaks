@@ -32,9 +32,10 @@ var item = [pplist itemAtIndex:0]
         int filter;
         
         object_getInstanceVariable(self, "filter", (void**)&filter);
-        if(filter == 1) {
+        if(filter == 1)
             [partList sortUsingFunction:comparePlane context:nil];
-        }
+        // else
+            
         
         endTimeLog(start, @"-[PPCraftingLayer loadUI]: Loading %d %s", [partList count], filter == 1 ? "planes" : "parts");
         callMemoryCleanup();
@@ -106,6 +107,7 @@ var item = [list itemAtIndex:1]
     
     if(![PPTSettings enabled]) return outLayer;
     
+    if([PPTSettings advertisedJobsOnTop])  [self moveAdvertisedJobsToTop:outLayer city:city plane:plane];
     if([PPTSettings normalEventJobsOnTop]) [self moveNormalEventJobsToTop:outLayer city:city plane:plane];
     if([PPTSettings globalEventJobsOnTop]) [self moveGlobalEventJobsToTop:outLayer city:city plane:plane];
     
@@ -220,6 +222,47 @@ var item = [list itemAtIndex:1]
     }
 #undef _jobList
 }
+%new -(void)moveAdvertisedJobsToTop:(id)layer city:(id)city plane:(id)plane {
+#define _jobList getIvar(layer, "jobs")
+    if(city != nil) {
+        startTimeLog(aJobs);
+        
+        debug(@"init arrays");
+        NSArray* ownedCities = [[NSArray alloc] initWithArray:[[[%c(PPScene) sharedScene] playerData] unlockedCities]];
+        NSArray* campaigns = [ownedCities valueForKey:@"lastCampaign"];
+        NSMutableArray* campaignCities = [[NSMutableArray alloc] init];
+        
+        debug(@"find all cities that have active advertising campaigns");
+        for(int i = 0; i < [ownedCities count]; i++)
+            if(![[campaigns objectAtIndex:i] isEqualToNumber:[NSNumber numberWithFloat:0.0f]]) [campaignCities addObject:[ownedCities objectAtIndex:i]];
+        
+        debug(@"Cities with active campaign: %@", [[[campaignCities valueForKey:@"name"] description] stringByReplacingOccurrencesOfString:@"\n" withString:@" "]);
+        
+        NSMutableArray* adJobs = [[NSMutableArray alloc] init];
+        
+        debug(@"iterate through job list");
+        for(int i = [_jobList count] - 1; i >= 0; i--) {
+            #define theJob [_jobList objectAtIndex:i]
+            if([[campaignCities valueForKey:@"city_id"] indexOfObject:[NSNumber numberWithInt:[theJob end_city_id]]] != NSNotFound) [adJobs addObject:theJob];
+            #undef theJob
+        }
+        
+        [_jobList removeObjectsInArray:adJobs];
+        
+        debug(@"add jobs to top of the job list");
+        for(int i = 0; i < [adJobs count]; i++)
+            [_jobList insertObject:[adJobs objectAtIndex:i] atIndex:1];
+        
+        if([adJobs count] != 0) log(@"Found %d advertised jobs!", [adJobs count]);
+        
+        [adJobs release];
+        [campaignCities release];
+        [ownedCities release];
+        
+        endTimeLog(aJobs, @"Looking for advertised jobs");
+    }
+}
+#undef _jobList
 %end //}
 
 %hook PPStoreLayer //{

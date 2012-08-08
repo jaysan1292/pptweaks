@@ -13,6 +13,7 @@ static BOOL tripPickerPlanes;           // default: YES
 static BOOL globalEventJobsOnTop;       // default: NO
 static BOOL normalEventJobsOnTop;       // default: NO
 static BOOL sortEventsBelowClass;       // default: YES
+static BOOL advertisedJobsOnTop;        // default: NO
 
 /*
 cycript stuff
@@ -45,6 +46,7 @@ NSMutableDictionary* getSpecifiersForGroup(NSDictionary* input, NSInteger &index
         globalEventJobsOnTop = getBoolValue(@"GlobalEventJobsOnTop");
         normalEventJobsOnTop = getBoolValue(@"NormalEventJobsOnTop");
         sortEventsBelowClass = getBoolValue(@"SortEventsBelowClass");
+        advertisedJobsOnTop = getBoolValue(@"AdvertisedJobsOnTop");
     } else {
         log(@"Pocket Planes Tweaks is disabled.");
         twitterEnabled = YES;
@@ -58,6 +60,7 @@ NSMutableDictionary* getSpecifiersForGroup(NSDictionary* input, NSInteger &index
         globalEventJobsOnTop = NO;
         normalEventJobsOnTop = NO;
         sortEventsBelowClass = YES;
+        advertisedJobsOnTop = NO;
     }
     log(@"enabled? %@", boolToString(enabled));
     log(@"twitterEnabled? %@", boolToString(twitterEnabled));
@@ -71,6 +74,7 @@ NSMutableDictionary* getSpecifiersForGroup(NSDictionary* input, NSInteger &index
     log(@"globalEventJobsOnTop? %@", boolToString(globalEventJobsOnTop));
     log(@"normalEventJobsOnTop? %@", boolToString(normalEventJobsOnTop));
     log(@"sortEventsBelowClass? %@", boolToString(sortEventsBelowClass));
+    log(@"advertisedJobsOnTop? %@", boolToString(advertisedJobsOnTop));
 
     [dict release];
 #undef getBoolValue(val)
@@ -136,4 +140,5 @@ NSMutableDictionary* getSpecifiersForGroup(NSDictionary* input, NSInteger &index
 +(BOOL)globalEventJobsOnTop { return globalEventJobsOnTop; }
 +(BOOL)normalEventJobsOnTop { return normalEventJobsOnTop; }
 +(BOOL)sortEventsBelowClass { return sortEventsBelowClass; }
++(BOOL)advertisedJobsOnTop { return advertisedJobsOnTop; }
 @end

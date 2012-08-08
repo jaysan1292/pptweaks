@@ -16,11 +16,11 @@ What it does:
 - Play a sound when new jobs come in
 - Planes are sorted when going from plane-to-plane using the side arrows or swiping (easier seen than explained)
 - If a job is a global event job, move it to the top of the jobs list
+- If a job is an event job, move it to the top of the jobs list
 - Settings are in Settings.app as well as a new interface in the Settings screen in-game
 
 Planned:
 - Move dropdown bar below notification bar (instead of playing an alert sound like it does currently
-- Add an entry to the event progress screen that shows how many jobs you've contributed to the global event
 - Sort parts list by price value, and alphabetically
 - Tap on the bottom bar (possibly the level label) to scroll to the bottom of a list
 - Add a clock display to the main menu
@@ -28,7 +28,7 @@ Planned:
 - If an airport is closed, and the time to get there is greater than the time it would take for the airport to reopen, allow the plane to fly to that airport
 - If an airport is closed, the text on the detail bar will be red when viewing that airport
 - On the trip planner screen, if there are more than one destinations, display the number of passengers/cargo going to that specific city
-- If a job is an event job, move it to the top of the jobs list
+- If a job is for an advertised city, move it to the top of the jobs list
 
 Deferred:
 - n/a
