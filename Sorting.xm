@@ -4,6 +4,9 @@ NSComparisonResult compareEvent(NSString* first, NSString* second, void *context
     //should pass in each string in "xx:xx" format
     NSArray *a = [first componentsSeparatedByString:@":"];
     NSArray *b = [second componentsSeparatedByString:@":"];
+    
+    if([[a objectAtIndex:1] intValue] == 1000) return NSOrderedDescending;
+    else if([[b objectAtIndex:1] intValue] == 1000) return NSOrderedAscending;
 
     if ([[a objectAtIndex:1] intValue] > [[b objectAtIndex:1] intValue])
         return NSOrderedAscending;
@@ -16,13 +19,12 @@ NSComparisonResult compareEvent(NSString* first, NSString* second, void *context
 NSComparisonResult compareJobFare(PPCargoInfo* first, PPCargoInfo* second, void *context) {
 #define firstFare [%c(PPScene) fareFrom:[%c(PPCityInfo) cityInfoWithId:[first start_city_id]] to:[%c(PPCityInfo) cityInfoWithId:[first end_city_id]]]
 #define secondFare [%c(PPScene) fareFrom:[%c(PPCityInfo) cityInfoWithId:[second start_city_id]] to:[%c(PPCityInfo) cityInfoWithId:[second end_city_id]]]
-    if(firstFare > secondFare) {
+    if(firstFare > secondFare)
         return NSOrderedAscending;
-    } else if(firstFare < secondFare) {
+    else if(firstFare < secondFare)
         return NSOrderedDescending;
-    } else {
+    else
         return NSOrderedSame;
-    }
 #undef firstFare
 #undef secondFare
 }
@@ -30,13 +32,12 @@ NSComparisonResult compareJobFare(PPCargoInfo* first, PPCargoInfo* second, void 
 NSComparisonResult compareJobDist(PPCargoInfo* first, PPCargoInfo* second, void *context) {
 #define firstDist [%c(PPScene) distBetween:[%c(PPCityInfo) cityInfoWithId:[first end_city_id]] to:context]
 #define secondDist [%c(PPScene) distBetween:[%c(PPCityInfo) cityInfoWithId:[second end_city_id]] to:context]
-    if(firstDist > secondDist) {
+    if(firstDist > secondDist)
         return NSOrderedAscending;
-    } else if(firstDist < secondDist) {
+    else if(firstDist < secondDist)
         return NSOrderedDescending;
-    } else {
+    else
         return NSOrderedSame;
-    }
 #undef firstDist
 #undef secondDist
 }
