@@ -23,7 +23,11 @@
         if((int)[[item children] count] != 5 || i >= (int)[self itemsLoaded] - 1) break;
 
         if([[[item children] objectAtIndex:4] isMemberOfClass:[%c(CCSpriteBatchNode) class]]) {
-            PPPlaneInfo* info = [[[item children] objectAtIndex:3] info];
+            if([[[item children] objectAtIndex:3] respondsToSelector:@selector(info)]) {
+                PPPlaneInfo* info = [[[item children] objectAtIndex:3] info];
+            } else {
+                break;
+            }
             
             [[[item children] objectAtIndex:4] setVisible:NO];
             // [[item children] removeObject:[[item children] objectAtIndex:4]]; // this causes SIGSEGV
