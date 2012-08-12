@@ -75,6 +75,9 @@
     [settings release];
     [userSettings release];
     [settingMap release];
+    navBar = nil;
+    settingsTableView = nil;
+    contentView = nil;
     
     [super dealloc];
 }

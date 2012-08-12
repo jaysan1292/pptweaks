@@ -51,33 +51,30 @@ static NSUInteger totalBuxSpent = 0;
 }
 @end
 
-%hook PPPlayerData //{
+%hook PPPlayerData
 -(void)addBux:(int)bux {
     totalBuxEarned += bux;
-    log(@"Added %@ bux.", formatNumber(bux));
+    log(@"Added %@ bux. Earned this session: %@", formatNumber(bux), formatNumber([PPTStats getSessionBuxProfit]));
     %orig;
 }
 -(void)spendBux:(int)bux {
     totalBuxSpent += bux;
-#ifdef DBG
-    return;
-#endif
-    log(@"Spent %@ bux.", formatNumber(bux));
+    log(@"Spent %@ bux. Earned this session: %@", formatNumber(bux), formatNumber([PPTStats getSessionBuxProfit]));
     %orig;
 }
 -(void)addCoins:(int)coins {
     totalCoinsEarned += coins;
-    log(@"Added %@ %s.", formatNumber(coins), coins == 1 ? "coin":"coins");
+    log(@"Added %@ %s. Earned this session: %@", formatNumber(coins), coins == 1 ? "coin":"coins", formatNumber([PPTStats getSessionCoinProfit]));
     %orig;
 }
 -(void)spendCoins:(int)coins {
     totalCoinsSpent += coins;
-    log(@"Spent %@ %s.", formatNumber(coins), coins == 1 ? "coin":"coins");
+    log(@"Spent %@ %s. Earned this session: %@", formatNumber(coins), coins == 1 ? "coin":"coins", formatNumber([PPTStats getSessionCoinProfit]));
     %orig;
 }
-%end //}
+%end
 
-// %hook PPHud //{
+// %hook PPHud
 // -(void)ccTouchEnded:(id)ended withEvent:(id)event {
 // #define coinLbl getIvar(self, "coinLabel")
 // #define buxLbl getIvar(self, "buxLabel")
@@ -103,11 +100,11 @@ static NSUInteger totalBuxSpent = 0;
 // #undef coinLbl
 // #undef buxLbl
 // }
-// %end //}
+// %end
 // 
-// %hook PPDialog //{
+// %hook PPDialog
 // -(id)initWithMessage:(id)message buttons:(id)buttons callback:(SEL)callback target:(id)target data:(id)data {
 //     debug(@"-[PPDialog initWithMessage:%@ buttons:%@ callback:'%@' target:%@ data:%@", message, [buttons class], NSStringFromSelector(callback), target, data);
 //     %orig;
 // }
-// %end //}
+// %end

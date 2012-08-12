@@ -94,15 +94,30 @@ NSComparisonResult comparePlaneSpeed(PPPlaneInfo* first, PPPlaneInfo* second, vo
 NSComparisonResult comparePlaneName(PPPlaneInfo* first, PPPlaneInfo* second, void* context) {
     PPPlaneType firstType;
     PPPlaneType secondType;
+
+    planeType(first, firstType);
+
+    planeType(second, secondType);
+    // if(first.cargoRows == 0) firstType = PPPassengerPlaneType;
+    // else if(first.passRows == 0) firstType = PPCargoPlaneType;
+    // else firstType = PPMixedPlaneType;
     
-    if(first.cargoRows == 0 && first.passRows != 0) firstType = PPPassengerPlaneType;
-    else if(first.cargoRows != 0 && first.passRows == 0) firstType = PPCargoPlaneType;
-    else if(first.cargoRows != 0 && first.passRows != 0) firstType = PPMixedPlaneType;
-    
-    if(second.cargoRows == 0 && second.passRows != 0) secondType = PPPassengerPlaneType;
-    else if(second.cargoRows != 0 && second.passRows == 0) secondType = PPCargoPlaneType;
-    else if(second.cargoRows != 0 && second.passRows != 0) secondType = PPMixedPlaneType;
-    
+    // if(second.cargoRows == 0) secondType = PPPassengerPlaneType;
+    // else if(second.passRows == 0) secondType = PPCargoPlaneType;
+    // else secondType = PPMixedPlaneType;    
+
     // return firstType < secondType ? NSOrderedDescending : firstType > secondType ? NSOrderedAscending : NSOrderedSame;
     return firstType < secondType ? NSOrderedAscending : firstType > secondType ? NSOrderedDescending : NSOrderedSame;
 }
+
+NSComparisonResult comparePlanePart(PPPlanePartInfo* first, PPPlanePartInfo* second, void* context) {
+    // [%c(PPPlaneInfo) planeInfoWithID:[first plane_info_id]]
+    // [%c(PPPlaneInfo) planeInfoWithID:[second plane_info_id]]
+    int firstSellCost = (int)[[%c(PPPlaneInfo) planeInfoWithID:[first plane_info_id]] partSellCost];
+    int secondSellCost = (int)[[%c(PPPlaneInfo) planeInfoWithID:[second plane_info_id]] partSellCost];
+
+    return firstSellCost < secondSellCost ? NSOrderedAscending : firstSellCost > secondSellCost ? NSOrderedDescending : [[first partName] compare:[second partName]];
+}
+// NSComparisonResult comparePlanePartType(PPPlanePartInfo* first, PPPlanePartInfo* second, void* context) {
+//     if([[first partName] isEqualToString:@"body"])
+// }

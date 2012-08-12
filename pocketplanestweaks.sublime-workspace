@@ -1,0 +1,692 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"ad",
+				"advertisedJobsOnTop"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "PPTSettings.mm",
+			"settings":
+			{
+				"buffer_size": 6561,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "Tweak.xm",
+			"settings":
+			{
+				"buffer_size": 6065,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "Map.xm",
+			"settings":
+			{
+				"buffer_size": 8294,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "Sorting.mm",
+			"settings":
+			{
+				"buffer_size": 4228,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "Scene.xm",
+			"settings":
+			{
+				"buffer_size": 2117,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "Lists.xm",
+			"settings":
+			{
+				"buffer_size": 9685,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "PlayerData.xm",
+			"settings":
+			{
+				"buffer_size": 1000,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "Settings.xm",
+			"settings":
+			{
+				"buffer_size": 2851,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "Stats.xm",
+			"settings":
+			{
+				"buffer_size": 3684,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "Descriptions.xm",
+			"settings":
+			{
+				"buffer_size": 577,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "Tweak.h",
+			"settings":
+			{
+				"buffer_size": 2417,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "pocketplanestweakspreferences/Resources/PocketPlanesTweaksPreferences.plist",
+			"settings":
+			{
+				"buffer_size": 4553,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 81.0,
+		"selected_items":
+		[
+			[
+				"rem",
+				"Package Control: Remove Package"
+			],
+			[
+				"listp",
+				"Package Control: List Packages"
+			],
+			[
+				"ip",
+				"Package Control: Install Package"
+			],
+			[
+				"ad",
+				"Package Control: Add Repository"
+			],
+			[
+				"adpr",
+				"Package Control: Add Repository"
+			],
+			[
+				"addr",
+				"Package Control: Add Repository"
+			],
+			[
+				"addre",
+				"Package Control: Add Repository"
+			],
+			[
+				"xml",
+				"Set Syntax: XML"
+			],
+			[
+				"remo",
+				"Package Control: Remove Package"
+			],
+			[
+				"folding",
+				"Code Folding: Unfold All"
+			],
+			[
+				"fold",
+				"Code Folding: Fold Tag Attributes"
+			],
+			[
+				"comm",
+				"Toggle Comment"
+			],
+			[
+				"gitstat",
+				"Git Status Files: Opens all the files in a git repository that are listed by git status."
+			],
+			[
+				"package",
+				"Package Control: Install Package"
+			],
+			[
+				"packagecontrolset",
+				"Preferences: Package Control Settings – User"
+			],
+			[
+				"upg",
+				"Package Control: Upgrade Package"
+			],
+			[
+				"Package upg",
+				"Package Control: Upgrade/Overwrite All Packages"
+			],
+			[
+				"objec",
+				"Set Syntax: Objective-C"
+			]
+		],
+		"width": 712.0
+	},
+	"console":
+	{
+		"height": 125.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/H/iosdev/pocketplanestweaks/Makefile",
+		"/C/Users/Jason Recillo/AppData/Roaming/Sublime Text 2/Packages/User/Preferences.sublime-settings",
+		"/H/iosdev/pocketplanestweaks/Tweak.xm",
+		"/C/Users/Jason Recillo/Documents/Visual Studio 2010/Projects/Assignment 4/Assignment 4/Assignment 4.vcxproj",
+		"/C/Users/Jason Recillo/Documents/Visual Studio 2010/Projects/Assignment 4/Assignment 4.sln",
+		"/C/Users/Jason Recillo/AppData/Roaming/Sublime Text 2/Packages/User/sublime_build.sh",
+		"/C/Users/Jason Recillo/AppData/Roaming/Sublime Text 2/Packages/User/pptweaks.sublime-build",
+		"/H/iosdev/pocketplanestweaks/sublime_build.sh",
+		"/H/iosdev/pocketplanestweaks/pocketplanestweaks.sublime-project",
+		"/H/iosdev/pocketplanestweaks/Functions.mm",
+		"/H/iosdev/pocketplanestweaks/Map.xm",
+		"/H/iosdev/pocketplanestweaks/Sorting.xm",
+		"/H/iosdev/pocketplanestweaks/Scene.xm",
+		"/H/iosdev/pocketplanestweaks/Lists.xm",
+		"/H/iosdev/pocketplanestweaks/PlayerData.xm",
+		"/H/iosdev/pocketplanestweaks/Settings.xm",
+		"/H/iosdev/pocketplanestweaks/Stats.xm",
+		"/H/iosdev/pocketplanestweaks/Descriptions.xm",
+		"/H/iosdev/pocketplanestweaks/Tweak.h",
+		"/H/iosdev/pocketplanestweaks/pocketplanestweakspreferences/Resources/PocketPlanesTweaksPreferences.plist",
+		"/C/Users/Jason Recillo/AppData/Roaming/Sublime Text 2/Packages/Package Control/Package Control.sublime-settings",
+		"/H/iosdev/pocketplanestweaks/command,",
+		"/H/iosdev/pocketplanestweaks/file.",
+		"/C/Users/Jason Recillo/AppData/Roaming/Sublime Text 2/Packages/User/Package Control.sublime-settings",
+		"/C/Users/Jason Recillo/AppData/Roaming/Sublime Text 2/Packages/Default/Preferences.sublime-settings",
+		"/C/Users/Jason Recillo/AppData/Roaming/Sublime Text 2/Packages/User/Objective-C++.sublime-settings",
+		"/H/iosdev/pocketplanestweaks/PPTSettings.mm",
+		"/C/Users/Jason Recillo/AppData/Roaming/Sublime Text 2/Packages/User/Distraction Free.sublime-settings",
+		"/C/Users/Jason Recillo/AppData/Roaming/Sublime Text 2/Packages/User/JSON.sublime-settings",
+		"/C/Users/Jason Recillo/AppData/Roaming/Sublime Text 2/Packages/User/Default (Windows).sublime-keymap",
+		"/C/Users/Jason Recillo/AppData/Roaming/Sublime Text 2/Packages/Default/Default (Windows).sublime-keymap"
+	],
+	"find":
+	{
+		"height": 34.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"%orig",
+			" //[ ]?[{}]",
+			" //{",
+			" //[ ]?[{}]",
+			"//[{}]",
+			"word[_- ]wrap",
+			"word[- ]wrap",
+			"NO",
+			";\n"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": true,
+		"replace_history":
+		[
+			""
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 4,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "PPTSettings.mm",
+					"settings":
+					{
+						"buffer_size": 6561,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								559,
+								559
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Objective-C/Objective-C++.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "Tweak.xm",
+					"settings":
+					{
+						"buffer_size": 6065,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3768,
+								3773
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/User/Objective-C+Logos.tmlanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 837.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "Map.xm",
+					"settings":
+					{
+						"buffer_size": 8294,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1052,
+								1052
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/User/Objective-C+Logos.tmlanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 270.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "Sorting.mm",
+					"settings":
+					{
+						"buffer_size": 4228,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1303,
+								1303
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Objective-C/Objective-C++.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "Scene.xm",
+					"settings":
+					{
+						"buffer_size": 2117,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								774,
+								774
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/User/Objective-C+Logos.tmlanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "Lists.xm",
+					"settings":
+					{
+						"buffer_size": 9685,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/User/Objective-C+Logos.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "PlayerData.xm",
+					"settings":
+					{
+						"buffer_size": 1000,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								756,
+								756
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/User/Objective-C+Logos.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "Settings.xm",
+					"settings":
+					{
+						"buffer_size": 2851,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								919,
+								934
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/User/Objective-C+Logos.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "Stats.xm",
+					"settings":
+					{
+						"buffer_size": 3684,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/User/Objective-C+Logos.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "Descriptions.xm",
+					"settings":
+					{
+						"buffer_size": 577,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/User/Objective-C+Logos.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "Tweak.h",
+					"settings":
+					{
+						"buffer_size": 2417,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								393,
+								393
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "pocketplanestweakspreferences/Resources/PocketPlanesTweaksPreferences.plist",
+					"settings":
+					{
+						"buffer_size": 4553,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								268,
+								268
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 0.0
+	},
+	"input":
+	{
+		"height": 31.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 151.0
+	},
+	"replace":
+	{
+		"height": 62.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"plane",
+				"/H/iosdev/pocketplanestweaks/Descriptions.xm"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"selected_items":
+		[
+			[
+				"",
+				"/H/iosdev/pocketplanestweaks/pocketplanestweaks.sublime-project"
+			]
+		],
+		"width": 380.0
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 276.0,
+	"status_bar_visible": true
+}

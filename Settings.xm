@@ -8,14 +8,7 @@
 
 static BOOL isTweakButtonPressed = NO;
 
-%hook AppDelegate //{
--(void)applicationDidFinishLaunching:(UIApplication*)application {
-    debug(@"App finished launching!");
-    %orig;
-}
-%end //}
-
-%hook PPSettingsLayer //{
+%hook PPSettingsLayer
 /* cycript stuff
 var settingslayer = [[PPScene sharedScene]menuLayer]
 var btn = object_getIvar(settingslayer, class_getInstanceVariable([settingslayer class], "resetAwardsButton"))
@@ -84,4 +77,4 @@ var tweakBtnShadow = [tweakBtn.children objectAtIndex:0]
     PPTSettingsViewController* settings = [[[PPTSettingsViewController alloc] init] autorelease];
     [[[%c(CCDirector) sharedDirector] openGLView] addSubview:[[settings retain] view]];
 }
-%end //}
+%end

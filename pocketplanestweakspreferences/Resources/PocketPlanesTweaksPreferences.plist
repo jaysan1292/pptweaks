@@ -114,6 +114,13 @@
             label = "Advertised Jobs on Top";
         },
         {
+            cell = PSSwitchCell;
+            default = 0;
+            defaults = "com.jaysan1292.pptweaksprefs";
+            key = DetailedBoardingLabels;
+            label = "Detailed Boarding Labels";
+        },
+        {
             cell = PSGroupCell;
             isStaticText = 1;
         },

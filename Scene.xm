@@ -2,7 +2,11 @@
 
 #define showDropdown(str, args...) id dd = [[%c(PPDropdown) alloc] initWithMessage:[NSString stringWithFormat:str, ##args] callback:nil target:nil data:nil sound:nil buzz:NO]; [[%c(PPDropdownQueue) sharedQueue] addDropdown:dd]; [dd release]
 
-%hook PPScene //{
+%hook PPScene
+-(id)init {
+    debug(@"-[PPScene init]");
+    return %orig;
+}
 +(NSString*)timeString:(int)string {
     if([PPTSettings moreDetailedTime]) {
         int days = (int)(string/(24*60*60));
@@ -43,4 +47,9 @@
     %orig;
 #endif
 }
-%end //}
+
+// convenience methods for Cycript
+%new +(CGPoint)pointWithX:(int)x Y:(int)y {
+    return ccp(x, y);
+}
+%end

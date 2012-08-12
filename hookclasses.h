@@ -2,7 +2,10 @@
 #define __HOOKCLASSES_H
 
 #import <OpenGLES/ES1/gl.h>
-// Cocos2D Classes and Structs {
+
+// ---------------------------
+// Cocos2D Classes and Structs
+// ---------------------------
 typedef struct _ccColor3B {
     GLubyte r;
     GLubyte g;
@@ -129,9 +132,10 @@ ccc3(const GLubyte r, const GLubyte g, const GLubyte b) {
 -(id)initWithTarget:(id)target selector:(SEL)selector;
 // inherited: -(id)init;
 @end
-//}
 
-// Pocket Planes Classes and Structs {
+// ---------------------------------
+// Pocket Planes Classes and Structs
+// ---------------------------------
 @interface PPPlayerData : NSObject
 @property(retain, nonatomic) NSMutableArray* cities;
 @property(retain, nonatomic) NSMutableArray* events;
@@ -143,6 +147,10 @@ ccc3(const GLubyte r, const GLubyte g, const GLubyte b) {
 
 @interface PPScene : CCLayer
 @property(retain) PPPlayerData* playerData;
+@end
+
+@interface PPList : CCLayer
+@property(readonly, assign, getter=isDragging) BOOL dragging;	// converted property
 @end
 
 @interface PPCargoInfo : NSObject
@@ -259,6 +267,9 @@ ccc3(const GLubyte r, const GLubyte g, const GLubyte b) {
 @property(retain, nonatomic) NSString* paint;
 @property(retain, nonatomic) NSString* planeName;
 @property(retain, nonatomic) NSString* upgrades;
+
+//%new methods
+-(PPPlaneType)planeType;
 @end
 
 @interface PPPlanePartInfo : NSObject

@@ -40,3 +40,10 @@ void print_backtrace() {
     
     free(strings);
 }
+
+// PPPlaneType planeType(PPPlaneInfo* plane) {
+//     debug(@"planeType(%@)", plane);
+//     if(plane.cargoRows == 0) return PPPassengerPlaneType;
+//     else if(plane.passRows == 0) return PPCargoPlaneType;
+//     else return PPMixedPlaneType;
+// }

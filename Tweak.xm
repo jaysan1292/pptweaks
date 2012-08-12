@@ -17,10 +17,13 @@ What it does:
 - Planes are sorted when going from plane-to-plane using the side arrows or swiping (easier seen than explained)
 - If a job is a global event job, move it to the top of the jobs list
 - If a job is an event job, move it to the top of the jobs list
+- If a job is for an advertised city, move it to the top of the jobs list
 - Settings are in Settings.app as well as a new interface in the Settings screen in-game
+- In the Arrivals list, instead of "BOARDING", show exactly how many passengers/cargo are on the plane
+- Instead of "BOARDING", display detailed status of how full a plane is
 
 Planned:
-- Move dropdown bar below notification bar (instead of playing an alert sound like it does currently
+- Move dropdown bar below notification bar (instead of playing an alert sound like it does currently)
 - Sort parts list by price value, and alphabetically
 - Tap on the bottom bar (possibly the level label) to scroll to the bottom of a list
 - Add a clock display to the main menu
@@ -28,14 +31,10 @@ Planned:
 - If an airport is closed, and the time to get there is greater than the time it would take for the airport to reopen, allow the plane to fly to that airport
 - If an airport is closed, the text on the detail bar will be red when viewing that airport
 - On the trip planner screen, if there are more than one destinations, display the number of passengers/cargo going to that specific city
-- If a job is for an advertised city, move it to the top of the jobs list
+- Allow configuration of the order of job list-related manipulations; will likely require huge addition to the custom settings parser
 
 Deferred:
 - n/a
-
-Configuration:
-- Enable/disable Twitter integration
-- Show/hide plane labels
 
 TODO NEXT:
 - Use NSUserDefaults for default values
@@ -44,6 +43,11 @@ KNOWN BUGS:
 - There is a rare crash that happens when sending out a plane, that usually occurs when another plane lands
 
 CHANGELOG:
+- 1.0.4-642
+    - Added option to show more detailed "BOARDING" labels on the Arrivals screen
+    - Some performance enhancements
+- 1.0.4-500
+    - Added ability to put jobs to cities with an active advertising campaign at the top of the job list
 - 1.0.4-490
     - Completed normal events are not included when placing event jobs at the top of the job list
 - 1.0.4-457
@@ -65,17 +69,18 @@ CHANGELOG:
 
 #define playSound(sound) [[%c(SimpleAudioEngine) sharedEngine] playEffect:[%c(CDUtilities) fullPathFromRelativePath:sound]];
 #define callMemoryCleanup() [[[%c(UIApplication) sharedApplication] delegate] applicationDidReceiveMemoryWarning:[%c(UIApplication) sharedApplication]]
+static BOOL isLoading;
 
-%hook AppDelegate //{
+%hook AppDelegate
 -(void)applicationDidReceiveMemoryWarning:(id)application {
     float memory_usage = get_memory();
     %orig;
     float memory_delta = memory_usage - get_memory();
     if(memory_delta >= 0) log(@"Freed up %.4f MB of memory.", memory_delta);
 }
-%end //}
+%end
 
-%hook PPDropdown //{
+%hook PPDropdown
 -(id)initWithMessage:(id)message callback:(SEL)callback target:(id)target data:(id)data sound:(id)sound buzz:(BOOL)buzz {
     id dd = %orig;
     if([PPTSettings enabled]) {
@@ -87,43 +92,33 @@ CHANGELOG:
     }
     return dd;
 }
--(void)closeDropDown {
-    debug(@"-[PPDropdown closeDropDown]: %@", getIvar(self, "msg"));
-    %orig;
-}
--(void)dealloc {
-    debug(@"-[PPDropdown dealloc]: %@", getIvar(self, "msg"));
-    %orig;
-}
-%end //}
+%end
 
-%hook PPDropdownQueue //{
+%hook PPDropdownQueue
 -(void)addDropdown:(id)dropdown {
     if([[dropdown data] isMemberOfClass:[%c(PPPlaneInfo) class]] && ![PPTSettings planeLandingNotifications]) {
-        // debug(@"Dropdown is a plane landing notification, discarding.");
-        log(@"%@ has landed!", [[dropdown data] name]);
-        playSound(@"alertdouble.wav"); 
+        // log(@"%@ has landed!", [[dropdown data] name]);
+        // playSound(@"alertdouble.wav");
         return;
     } else {
         %orig;
     }
 }
-%end //}
+%end
 
-%hook PPFlightCrewLayer //{
+%hook PPFlightCrewLayer
 -(void)loadUI {
     %orig;
     disableTweetBtn();
 }
-%end //}
+%end
 
-%hook PPFlightLayer //{
+%hook PPFlightLayer
 -(void)loadUI {
 #define X 6.0f
 #define Y 72.0f
-    // debug(@"-[PPFlightLayer loadUI]");
     %orig;
-    // debug(@"Moving tweet button to (%.0f, %.0f)", X, Y);
+
     if([PPTSettings enabled]) {
         if([PPTSettings twitterEnabled]) {
             [getIvar(self, "shareBtn") setPositionInPixels:ccp(X, Y)];
@@ -134,9 +129,22 @@ CHANGELOG:
 #undef X
 #undef Y
 }
-%end //}
+%end
 
-%hook PPMenuLayer //{
+%hook PPLoadingScene
+-(void)init {
+    debug(@"-[PPLoadingScene init]");
+    isLoading = YES;
+    %orig;
+}
+-(void)dealloc {
+    debug(@"-[PPLoadingScene dealloc]");
+    isLoading = NO;
+    %orig;
+}
+%end
+
+%hook PPMenuLayer
 -(id)init {
     debug(@"-[PPMenuLayer init]");
     return %orig;
@@ -149,11 +157,39 @@ CHANGELOG:
     debug(@"-[PPMenuLayer release]");
     %orig;
 }
-%end //}
+%end
 
-%hook PPStatsLayer //{
+%hook PPStatsLayer
 -(void)loadUI {
     %orig;
     disableTweetBtn();
 }
-%end //}
+%end
+
+%hook PPTripInfo
+-(void)tripComplete {
+    // debug(@"-[PPTripInfo tripComplete]");
+    log(@"%@ has landed in %@!", [[[[%c(PPScene) sharedScene] playerData] planeInfoWithID:[self plane_id]] name], [[%c(PPCityInfo) cityInfoWithId:[self end_city_id]] name]);
+    if(![PPTSettings planeLandingNotifications] && !isLoading) {
+        playSound(@"alertdouble.wav");
+    }
+    %orig;
+}
+%end
+
+static void segHandler(int signo) {
+    switch(signo) {
+        case SIGSEGV:
+            debug(@"Segmentation fault!");
+            print_backtrace();
+            break;
+    }
+    exit(signo);
+}
+
+%ctor {
+    %init;
+    struct sigaction psa;
+    psa.sa_handler = segHandler;
+    sigaction(SIGSEGV, &psa, NULL);
+}
