@@ -58,23 +58,35 @@ var dot = object_getIvar(la, class_getInstanceVariable([la class], "dot"))
     endTimeLog(start, @"-[PPMapLayer loadMapUI]");
 }
 -(void)addCityToTrip:(id)trip {
+    if(![PPTSettings enabled]) { %orig; return; }
+
     debug(@"-[PPMapLayer addCityToTrip:%@]", [trip name]);
 
-    if(![PPTSettings enabled]) { %orig; return; }
-    // TODO: if clicked city isClosed,
-    // check if the time remaining is greater than the flight time.
-    // if true, then allow plane to fly there, else disallow it
-    // BOOL tripWasClosed = NO;
-    // if([trip isClosed]) {
-    //     debug(@"%@ is closed! %p", [trip name], trip);
-    //     // debug(@"%@ will be closed for %", [trip name])
-    //     tripWasClosed = YES;
-    //     //[trip setIsClosed:NO];
-    // }
+    if([trip isClosed]) {
+        debug(@"%@ is closed! %p", [trip name], trip);
+
+        BOOL cityWasClosed = YES;
+        [trip setIsClosed:NO];
+
+        // temporarily disable sounds, otherwise there will be a bunch of unnecessary sound played when this check happens
+        [[%c(CDAudioManager) sharedManager] setMute:YES];
+        %orig;
+        if((double)[[[[%c(PPScene) sharedScene] playerData] eventForCity:trip] endTime] < [getIvar(self, "planeTrip") endTime]) {
+            debug(@"Plane should arrive after the city reopens :D");
+            [trip setIsClosed:YES];
+
+            // reenable sounds before return
+            [[%c(CDAudioManager) sharedManager] setMute:NO];
+            return;
+        }
+        if(cityWasClosed) [trip setIsClosed:YES];
+        [self removeLastLegFromTrip];
+        
+        // reenable sounds before executing original method
+        [[%c(CDAudioManager) sharedManager] setMute:NO];
+    }
     
     %orig;
-
-    // if(tripWasClosed) [trip setIsClosed:YES];
 
     [self setVisibleCities];
 }

@@ -1,38 +1,53 @@
 #import "Tweak.h"
 
-%hook CCLabelBMFont
-
+%hook PPPlayerData
+// Returns the event info for the given city, or nil if not found.
+%new -(PPCityEventInfo*)eventForCity:(PPCityInfo*)city {
+    for(PPCityEventInfo* event in [self events]) {
+        if((NSInteger)[event city_id] == (NSInteger)[city city_id]) return event;
+    }
+    return nil;
+}
+// Returns the city info for the given name, or nil if not found.
+%new -(PPCityInfo*)cityForName:(NSString*)name {
+    for(PPCityInfo* city in [self cities]) {
+        if([[city name] isEqualToString:name]) return city;
+    }
+    return nil;
+}
 %end
 
 %hook PPArrivalsLayer
+// creates a get method for private variable in PPArrivalsLayer
 %new -(int)itemsLoaded {
     int out;
     object_getInstanceVariable(self, "itemsLoaded", (void**)&out);
     return out;
 }
+// Hides "BOARDING" label for each entry in the list, and replace it with a more detailed label 
+// showing how full each plane is
 %new -(void)updateBoardingLabels {
     if(![PPTSettings enabled] || ![PPTSettings detailedBoardingLabels]) return;
-    debug(@"-[PPArrivalsLayer updateBoardingLabels]");
+    debug(@"-[PPArrivalsLayer updateBoardingLabels] (%p)", self);
     PPList* list = getIvar(self, "list");
 
-    // for(int i = 0; i < (int)[self itemsLoaded]; i++) {
     int i = 0;
     do {
         #define item [list itemAtIndex:i]
-        // debug(@"Current index: %d, [[item children] count] = %d", i, [[item children] count]);
         if((int)[[item children] count] != 5 || i >= (int)[self itemsLoaded] - 1) break;
 
         if([[[item children] objectAtIndex:4] isMemberOfClass:[%c(CCSpriteBatchNode) class]]) {
-            if([[[item children] objectAtIndex:3] respondsToSelector:@selector(info)]) {
-                PPPlaneInfo* info = [[[item children] objectAtIndex:3] info];
+            PPPlaneInfo* info = nil;
+            if([[[item children] objectAtIndex:3] isMemberOfClass:[%c(PPPlane) class]]) {
+                info = [[[item children] objectAtIndex:3] info];
             } else {
-                break;
+                i++;
+                continue;
             }
-            
+                        
             [[[item children] objectAtIndex:4] setVisible:NO];
-            // [[item children] removeObject:[[item children] objectAtIndex:4]]; // this causes SIGSEGV
+            // [[item children] removeObject:[[item children] objectAtIndex:4]]; // this causes SIGSEGV, for some reason
 
-            // debug(@"Add label");
             NSString* label = nil;
             switch([info planeType]) {
                 case PPPassengerPlaneType:
@@ -54,7 +69,7 @@
             CCLabelBMFont* newLbl = [[%c(CCLabelBMFont) alloc] initWithString:label fntFile:@"silkscreen9.fnt"];
             [newLbl setPosition:ccp(214, 13)];
 
-            //pulse label if full
+            // TODO: pulse label if full
             if([info isFull]) {
                 debug(@"%@ is full!", [info name]);
                 [newLbl setColor:ccYELLOW];
@@ -74,7 +89,6 @@
         #undef item
         i++;
     } while(true);
-    //debug(@"finished iterating through list");
 }
 %end
 
@@ -226,7 +240,6 @@
 
 %hook PPMapLayer
 %new -(void)hidePlanes {
-    // debug(@"-[PPMapLayer hidePlanes]");
     startTimeLog(start);
     NSMutableArray* mapPlanes = getIvar(self, "mapPlanes");
 
